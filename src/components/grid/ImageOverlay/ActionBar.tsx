@@ -70,8 +70,12 @@ export const ActionBar: React.FC<ActionBarProps> = ({ frameData, onClose }) => {
     <motion.div
       initial={{ x: 100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 100, opacity: 0 }}
-      transition={{ duration: 0.3, delay: 0.1 }}
+      exit={{ x: 50, opacity: 0 }}
+      transition={{ 
+        duration: 0.3, 
+        delay: 0.1,
+        exit: { delay: 0, duration: 0.2 }
+      }}
       className="
         absolute right-6 top-1/2 -translate-y-1/2 z-20
         bg-white/10 backdrop-blur-lg rounded-2xl

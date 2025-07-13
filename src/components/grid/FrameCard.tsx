@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { IconRefresh } from '@tabler/icons-react';
 import clsx from 'clsx';
 import type { FrameData } from '../../types';
@@ -107,12 +107,14 @@ export const FrameCard: React.FC<FrameCardProps> = ({ data }) => {
         </footer>
       </motion.div>
 
-      {isOverlayOpen && (
-        <ImageOverlay
-          frameData={data}
-          onClose={() => setIsOverlayOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {isOverlayOpen && (
+          <ImageOverlay
+            frameData={data}
+            onClose={() => setIsOverlayOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }; 
