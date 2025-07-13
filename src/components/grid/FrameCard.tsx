@@ -110,7 +110,7 @@ export const FrameCard: React.FC<FrameCardProps> = ({ data }) => {
       <AnimatePresence>
         {isOverlayOpen && (
           <ImageOverlay
-            frameData={data}
+            initialFrameId={data.id}
             onClose={() => setIsOverlayOpen(false)}
           />
         )}
