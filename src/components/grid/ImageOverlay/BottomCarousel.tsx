@@ -1,5 +1,6 @@
-import React, { useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef, useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import clsx from 'clsx';
 import type { FrameData } from '../../../types';
 
@@ -16,6 +17,18 @@ export const BottomCarousel: React.FC<BottomCarouselProps> = ({
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const currentItemRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  // Check scroll position and update arrow visibility
+  const checkScrollPosition = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
+  };
 
   // Auto-scroll to current item when it changes
   useEffect(() => {
@@ -35,24 +48,81 @@ export const BottomCarousel: React.FC<BottomCarouselProps> = ({
     }
   }, [currentFrameId]);
 
+  // Check scroll position on mount and when frames change
+  useEffect(() => {
+    checkScrollPosition();
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', checkScrollPosition);
+      window.addEventListener('resize', checkScrollPosition);
+      
+      return () => {
+        container.removeEventListener('scroll', checkScrollPosition);
+        window.removeEventListener('resize', checkScrollPosition);
+      };
+    }
+  }, [frames]);
+
+  const handleScrollLeft = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    
+    const scrollAmount = container.clientWidth * 0.8; // Scroll 80% of viewport
+    container.scrollBy({
+      left: -scrollAmount,
+      behavior: 'smooth'
+    });
+  };
+
+  const handleScrollRight = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    
+    const scrollAmount = container.clientWidth * 0.8; // Scroll 80% of viewport
+    container.scrollBy({
+      left: scrollAmount,
+      behavior: 'smooth'
+    });
+  };
+
   return (
     <motion.div
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 100, opacity: 0 }}
       transition={{ duration: 0.3, delay: 0.2 }}
-      className="relative z-20 h-32 bg-black/60 backdrop-blur-lg border-t border-white/10"
+      className="relative z-20 h-32 bg-black/60 backdrop-blur-lg border-t border-white/10 flex items-center"
     >
+      {/* Left arrow - using flex positioning */}
+      <div className="absolute left-0 h-full flex items-center pl-2 z-10">
+        <AnimatePresence>
+          {canScrollLeft && (
+            <motion.button
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.2 }}
+              onClick={handleScrollLeft}
+              className="p-2 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors"
+              aria-label="Scroll left"
+            >
+              <IconChevronLeft size={24} className="text-white" />
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Scroll container */}
       <div 
         ref={scrollContainerRef}
-        className="h-full overflow-x-auto overflow-y-hidden scrollbar-hide"
+        className="h-full overflow-x-auto overflow-y-hidden scrollbar-hide flex-1"
         style={{ 
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
           WebkitScrollbar: { display: 'none' }
         }}
       >
-        <div className="flex items-center h-full px-6 gap-4">
+        <div className="flex items-center h-full px-16 gap-4">
           {frames.map((frame) => {
             const isActive = frame.id === currentFrameId;
             
@@ -99,6 +169,25 @@ export const BottomCarousel: React.FC<BottomCarouselProps> = ({
             );
           })}
         </div>
+      </div>
+
+      {/* Right arrow - using flex positioning */}
+      <div className="absolute right-0 h-full flex items-center pr-2 z-10">
+        <AnimatePresence>
+          {canScrollRight && (
+            <motion.button
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              transition={{ duration: 0.2 }}
+              onClick={handleScrollRight}
+              className="p-2 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors"
+              aria-label="Scroll right"
+            >
+              <IconChevronRight size={24} className="text-white" />
+            </motion.button>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Gradient edges for scroll indication */}
