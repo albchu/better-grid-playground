@@ -3,12 +3,12 @@ import { ImageSourceProvider } from './contexts/ImageSourceContext';
 import { ControlPanel } from './components/grid/ControlPanel';
 import { MasonryGrid } from './components/grid/MasonryGrid';
 import { PerformanceMonitor } from './components/common/PerformanceMonitor';
-import { useGridStore } from './store/grid';
+import { useGridStore, GRID_SIZE_PRESETS } from './store/grid';
 
 function App() {
   const [showDebug, setShowDebug] = useState(true);
-  const increaseGridSize = useGridStore(s => s.increaseGridSize);
-  const decreaseGridSize = useGridStore(s => s.decreaseGridSize);
+  const gridColumnWidth = useGridStore(s => s.gridColumnWidth);
+  const setGridColumnWidth = useGridStore(s => s.setGridColumnWidth);
   
   // Keyboard shortcuts
   useEffect(() => {
@@ -18,18 +18,31 @@ function App() {
         return;
       }
       
+      const currentIndex = GRID_SIZE_PRESETS.indexOf(gridColumnWidth);
+      
       if (e.key === '+' || e.key === '=') {
         e.preventDefault();
-        increaseGridSize();
+        if (currentIndex < GRID_SIZE_PRESETS.length - 1) {
+          setGridColumnWidth(GRID_SIZE_PRESETS[currentIndex + 1]);
+        }
       } else if (e.key === '-' || e.key === '_') {
         e.preventDefault();
-        decreaseGridSize();
+        if (currentIndex > 0) {
+          setGridColumnWidth(GRID_SIZE_PRESETS[currentIndex - 1]);
+        }
+      } else if (e.key >= '1' && e.key <= '7') {
+        // Number keys 1-7 for direct size selection
+        e.preventDefault();
+        const index = parseInt(e.key) - 1;
+        if (index < GRID_SIZE_PRESETS.length) {
+          setGridColumnWidth(GRID_SIZE_PRESETS[index]);
+        }
       }
     };
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [increaseGridSize, decreaseGridSize]);
+  }, [gridColumnWidth, setGridColumnWidth]);
   
   return (
     <ImageSourceProvider>
@@ -41,7 +54,7 @@ function App() {
             </h1>
             <div className="flex items-center gap-4">
               <span className="text-xs text-gray-500">
-                Press +/- to resize grid
+                Press +/- to resize • 1-7 for sizes
               </span>
               <button
                 onClick={() => setShowDebug(!showDebug)}

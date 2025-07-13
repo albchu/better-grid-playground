@@ -28,8 +28,8 @@ const logDebug = (action: string, data?: any) => {
 };
 
 // Grid size presets
-const GRID_SIZE_PRESETS = [160, 200, 240, 300, 360, 420];
-const MIN_GRID_SIZE = 160;
+export const GRID_SIZE_PRESETS = [120, 160, 200, 240, 300, 360, 420];
+const MIN_GRID_SIZE = 120;
 const MAX_GRID_SIZE = 420;
 
 export const useGridStore = create<GridState>()((set) => ({
