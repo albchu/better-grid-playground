@@ -5,6 +5,7 @@ export const PerformanceMonitor: React.FC = () => {
   const [fps, setFps] = useState(0);
   const [renderTime, setRenderTime] = useState(0);
   const frames = useGridStore(s => s.frames);
+  const gridColumnWidth = useGridStore(s => s.gridColumnWidth);
   
   useEffect(() => {
     let frameCount = 0;
@@ -44,6 +45,7 @@ export const PerformanceMonitor: React.FC = () => {
     <div className="fixed top-4 right-4 bg-black/80 text-white p-3 rounded-lg text-xs font-mono">
       <div>FPS: {fps}</div>
       <div>Frames: {frames.length}</div>
+      <div>Grid: {gridColumnWidth}px</div>
       <div>Last render: {renderTime}ms</div>
       <div>Memory: {
         'memory' in performance 

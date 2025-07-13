@@ -7,6 +7,7 @@ interface GridState {
   frames: FrameData[];
   selectionMode: boolean;
   selectedIds: Set<string>;
+  gridColumnWidth: number; // Width of grid columns in pixels
   
   addFrame: (imageSource: ImageSource) => Promise<void>;
   refreshFrameImage: (id: string, imageSource: ImageSource) => Promise<void>;
@@ -14,6 +15,9 @@ interface GridState {
   toggleSelectionMode: () => void;
   toggleSelect: (id: string) => void;
   deleteSelected: () => void;
+  setGridColumnWidth: (width: number) => void;
+  increaseGridSize: () => void;
+  decreaseGridSize: () => void;
 }
 
 // Debug logging utility
@@ -23,10 +27,16 @@ const logDebug = (action: string, data?: any) => {
   }
 };
 
+// Grid size presets
+const GRID_SIZE_PRESETS = [160, 200, 240, 300, 360, 420];
+const MIN_GRID_SIZE = 160;
+const MAX_GRID_SIZE = 420;
+
 export const useGridStore = create<GridState>()((set) => ({
   frames: [],
   selectionMode: false,
   selectedIds: new Set<string>(),
+  gridColumnWidth: 240, // Default column width
 
   addFrame: async (imageSource: ImageSource) => {
     const id = uuidv4();
@@ -124,6 +134,32 @@ export const useGridStore = create<GridState>()((set) => ({
         selectedIds: new Set(),
         selectionMode: false
       };
+    });
+  },
+
+  setGridColumnWidth: (width: number) => {
+    const clampedWidth = Math.max(MIN_GRID_SIZE, Math.min(MAX_GRID_SIZE, width));
+    logDebug('Setting grid column width', { requested: width, actual: clampedWidth });
+    set({ gridColumnWidth: clampedWidth });
+  },
+
+  increaseGridSize: () => {
+    set(s => {
+      const currentIndex = GRID_SIZE_PRESETS.findIndex(size => size >= s.gridColumnWidth);
+      const nextIndex = Math.min(currentIndex + 1, GRID_SIZE_PRESETS.length - 1);
+      const newWidth = GRID_SIZE_PRESETS[nextIndex];
+      logDebug('Increasing grid size', { from: s.gridColumnWidth, to: newWidth });
+      return { gridColumnWidth: newWidth };
+    });
+  },
+
+  decreaseGridSize: () => {
+    set(s => {
+      const currentIndex = GRID_SIZE_PRESETS.findIndex(size => size >= s.gridColumnWidth);
+      const nextIndex = Math.max(currentIndex - 1, 0);
+      const newWidth = GRID_SIZE_PRESETS[nextIndex];
+      logDebug('Decreasing grid size', { from: s.gridColumnWidth, to: newWidth });
+      return { gridColumnWidth: newWidth };
     });
   },
 })); 

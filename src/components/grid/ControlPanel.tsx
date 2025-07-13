@@ -1,11 +1,14 @@
 import React from 'react';
-import { IconPlus, IconTrash, IconSelect } from '@tabler/icons-react';
+import { IconPlus, IconTrash, IconSelect, IconZoomIn, IconZoomOut } from '@tabler/icons-react';
 import { useGridStore } from '../../store/grid';
 import { useGridActions } from '../../hooks/useGridActions';
 
 export const ControlPanel: React.FC = () => {
   const selectionMode = useGridStore(s => s.selectionMode);
   const selectedCount = useGridStore(s => s.selectedIds.size);
+  const gridColumnWidth = useGridStore(s => s.gridColumnWidth);
+  const increaseGridSize = useGridStore(s => s.increaseGridSize);
+  const decreaseGridSize = useGridStore(s => s.decreaseGridSize);
   const { addFrame, toggleSelectionMode, deleteSelected } = useGridActions();
 
   return (
@@ -26,8 +29,32 @@ export const ControlPanel: React.FC = () => {
         </button>
       )}
 
+      <div className="ml-auto flex items-center gap-2">
+        <button 
+          onClick={decreaseGridSize} 
+          className="btn-icon"
+          title="Decrease grid size"
+          disabled={gridColumnWidth <= 160}
+        >
+          <IconZoomOut size={18} stroke={2}/>
+        </button>
+        
+        <span className="text-sm text-gray-600 min-w-[60px] text-center font-medium">
+          {gridColumnWidth}px
+        </span>
+        
+        <button 
+          onClick={increaseGridSize} 
+          className="btn-icon"
+          title="Increase grid size"
+          disabled={gridColumnWidth >= 420}
+        >
+          <IconZoomIn size={18} stroke={2}/>
+        </button>
+      </div>
+
       {selectionMode && (
-        <span className="ml-auto self-center text-sm text-gray-600">
+        <span className="ml-4 self-center text-sm text-gray-600">
           {selectedCount} selected
         </span>
       )}

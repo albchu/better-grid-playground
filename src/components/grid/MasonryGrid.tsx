@@ -5,11 +5,17 @@ import { FrameCard } from './FrameCard';
 
 export const MasonryGrid: React.FC = () => {
   const frames = useGridStore(s => s.frames);
+  const gridColumnWidth = useGridStore(s => s.gridColumnWidth);
 
   // Log frame count changes
   useEffect(() => {
     console.log('[MasonryGrid] Frame count changed:', frames.length);
   }, [frames.length]);
+
+  // Log grid size changes
+  useEffect(() => {
+    console.log('[MasonryGrid] Grid column width changed:', gridColumnWidth);
+  }, [gridColumnWidth]);
 
   if (!frames || frames.length === 0) {
     return (
@@ -25,10 +31,10 @@ export const MasonryGrid: React.FC = () => {
   return (
     <div className="p-4">
       <div 
-        className="masonry-columns"
+        className="masonry-columns transition-all duration-300 ease-in-out"
         style={{
           columnCount: 'auto',
-          columnWidth: '240px',
+          columnWidth: `${gridColumnWidth}px`,
           columnGap: '16px'
         }}
       >
@@ -36,7 +42,7 @@ export const MasonryGrid: React.FC = () => {
           {frames.map((frame) => (
             <div 
               key={frame.id} 
-              className="break-inside-avoid mb-4"
+              className="break-inside-avoid mb-4 transition-all duration-300"
               style={{ display: 'inline-block', width: '100%' }}
             >
               <FrameCard data={frame} />
