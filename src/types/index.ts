@@ -3,7 +3,6 @@ export interface FrameData {
   width: number;               // generated image width (px)
   height: number;              // generated image height (px)
   label: string;
-  imageSrcUrl: string;         // identifier like "generated:${id}"
   imageDataUrl: string | null; // Base-64 PNG returned by worker
 }
 

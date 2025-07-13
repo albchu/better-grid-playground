@@ -5,11 +5,7 @@ import type { ImageSource, ImageSourceResult } from '../types';
 import ImageWorker from '../workers/imageWorker?worker&inline';
 
 interface WorkerApi {
-  generateRandomImage: (seed: string, maxSize?: number) => Promise<{
-    dataUrl: string;
-    w: number;
-    h: number;
-  }>;
+  generateRandomImage: (seed: string, maxSize?: number) => Promise<ImageSourceResult>;
 }
 
 export class WorkerImageSource implements ImageSource {
@@ -49,15 +45,11 @@ export class WorkerImageSource implements ImageSource {
       const result = await this.workerApi.generateRandomImage(id);
       console.log('[ImageSource] Image generated successfully:', {
         id,
-        dimensions: `${result.w}x${result.h}`,
+        dimensions: `${result.width}x${result.height}`,
         dataUrlLength: result.dataUrl.length
       });
       
-      return {
-        dataUrl: result.dataUrl,
-        width: result.w,
-        height: result.h,
-      };
+      return result;
     } catch (error) {
       console.error('[ImageSource] Error generating image:', { id, error });
       throw error;

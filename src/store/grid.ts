@@ -48,7 +48,6 @@ export const useGridStore = create<GridState>()((set) => ({
         width: 1, 
         height: 1,
         label: `Frame ${id.slice(0,4)}`,
-        imageSrcUrl: `generated:${id}`, 
         imageDataUrl: null
       }]
     }));
