@@ -10,7 +10,7 @@ interface BottomCarouselProps {
   onFrameSelect: (frameId: string) => void;
 }
 
-export const BottomCarousel: React.FC<BottomCarouselProps> = ({ 
+export const BottomCarousel: React.FC<BottomCarouselProps> = React.memo(({ 
   frames, 
   currentFrameId, 
   onFrameSelect 
@@ -48,10 +48,6 @@ export const BottomCarousel: React.FC<BottomCarouselProps> = ({
           behavior: 'smooth'
         });
         
-        console.log('[BottomCarousel] Auto-scrolled to current item:', { 
-          frameId: currentFrameId,
-          scrollLeft 
-        });
       }
     }, 50); // Small delay to ensure refs are updated
     
@@ -101,7 +97,7 @@ export const BottomCarousel: React.FC<BottomCarouselProps> = ({
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 100, opacity: 0 }}
       transition={{ duration: 0.3, delay: 0.2 }}
-      className="relative z-20 h-32 bg-black/60 backdrop-blur-lg border-t border-white/10 flex items-center"
+      className="relative z-20 h-24 flex items-center"
     >
       {/* Left arrow - using flex positioning */}
       <div className="absolute left-0 h-full flex items-center pl-2 z-10">
@@ -144,7 +140,6 @@ export const BottomCarousel: React.FC<BottomCarouselProps> = ({
                 whileTap={{ scale: 0.95 }}
                 onClick={() => {
                   if (frame.imageDataUrl) {
-                    console.log('[BottomCarousel] Frame selected:', { id: frame.id });
                     onFrameSelect(frame.id);
                   }
                 }}
@@ -209,4 +204,4 @@ export const BottomCarousel: React.FC<BottomCarouselProps> = ({
       <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-black/60 to-transparent pointer-events-none" />
     </motion.div>
   );
-}; 
+}); 

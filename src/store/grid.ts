@@ -3,19 +3,25 @@ import { v4 as uuidv4 } from 'uuid';
 import type { FrameData, ImageSource } from '../types';
 import { DEBUG_CONFIG } from '../utils/debug';
 
-interface GridState {
+interface GridStore {
   frames: FrameData[];
+  gridColumnWidth: number;
+  targetFrameSize: number;
   selectionMode: boolean;
   selectedIds: Set<string>;
-  gridColumnWidth: number; // Width of grid columns in pixels
   
+  // Actions
   addFrame: (imageSource: ImageSource) => Promise<void>;
   refreshFrameImage: (id: string, imageSource: ImageSource) => Promise<void>;
+  removeFrame: (id: string) => void;
   updateFrame: (id: string, updates: Partial<FrameData>) => void;
+  setGridColumnWidth: (width: number) => void;
+  setTargetFrameSize: (size: number) => void;
   toggleSelectionMode: () => void;
   toggleSelect: (id: string) => void;
+  selectAll: () => void;
+  clearSelection: () => void;
   deleteSelected: () => void;
-  setGridColumnWidth: (width: number) => void;
   increaseGridSize: () => void;
   decreaseGridSize: () => void;
 }
@@ -32,11 +38,12 @@ export const GRID_SIZE_PRESETS = [120, 160, 200, 240, 300, 360, 420];
 const MIN_GRID_SIZE = 120;
 const MAX_GRID_SIZE = 420;
 
-export const useGridStore = create<GridState>()((set) => ({
+export const useGridStore = create<GridStore>()((set) => ({
   frames: [],
   selectionMode: false,
   selectedIds: new Set<string>(),
   gridColumnWidth: 240, // Default column width
+  targetFrameSize: 1, // Default target frame size
 
   addFrame: async (imageSource: ImageSource) => {
     const id = uuidv4();
@@ -142,6 +149,11 @@ export const useGridStore = create<GridState>()((set) => ({
     set({ gridColumnWidth: clampedWidth });
   },
 
+  setTargetFrameSize: (size: number) => {
+    logDebug('Setting target frame size', { size });
+    set({ targetFrameSize: size });
+  },
+
   increaseGridSize: () => {
     set(s => {
       const currentIndex = GRID_SIZE_PRESETS.findIndex(size => size >= s.gridColumnWidth);
@@ -160,5 +172,21 @@ export const useGridStore = create<GridState>()((set) => ({
       logDebug('Decreasing grid size', { from: s.gridColumnWidth, to: newWidth });
       return { gridColumnWidth: newWidth };
     });
+  },
+
+  selectAll: () => {
+    logDebug('Selecting all frames');
+    set(s => ({
+      selectedIds: new Set(s.frames.map(f => f.id)),
+      selectionMode: true
+    }));
+  },
+
+  clearSelection: () => {
+    logDebug('Clearing selection');
+    set(s => ({
+      selectedIds: new Set(),
+      selectionMode: false
+    }));
   },
 })); 

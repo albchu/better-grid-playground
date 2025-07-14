@@ -66,30 +66,32 @@ interface NavButtonProps {
 }
 
 const NavButton: React.FC<NavButtonProps> = ({ direction, onClick, disabled }) => {
-  // const [isPressed, setIsPressed] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
   
   const isPrev = direction === 'prev';
-  const Icon = isPrev ? IconPlayerTrackPrev : IconPlayerTrackNext;
+  const Icon = isPressed && !disabled 
+    ? (isPrev ? IconPlayerTrackPrevFilled : IconPlayerTrackNextFilled)
+    : (isPrev ? IconPlayerTrackPrev : IconPlayerTrackNext);
+    
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log(`[NavButton] ${direction} button clicked, disabled: ${disabled}`);
+    if (!disabled) {
+      onClick();
+    }
+  };
     
   return (
-    <motion.button
-      whileHover={disabled ? {} : { scale: 1.1 }}
-      whileTap={disabled ? {} : { scale: 0.95 }}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log(`[NavButton] ${direction} button clicked, disabled: ${disabled}`);
-        if (!disabled) {
-          onClick();
-        }
-      }}
-      // onPointerDown={() => !disabled && setIsPressed(true)}
-      // onPointerUp={() => setIsPressed(false)}
-      // onPointerLeave={() => setIsPressed(false)}
+    <button
+      onClick={handleClick}
+      onPointerDown={() => !disabled && setIsPressed(true)}
+      onPointerUp={() => setIsPressed(false)}
+      onPointerLeave={() => setIsPressed(false)}
       disabled={disabled}
       className={`
         p-3 rounded-xl transition-all duration-200
-        text-white/80 hover:text-white
+        text-white/80 hover:text-white hover:scale-110
         ${disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white/20'}
       `}
       title={isPrev ? "Previous" : "Next"}
@@ -97,45 +99,38 @@ const NavButton: React.FC<NavButtonProps> = ({ direction, onClick, disabled }) =
       type="button"
     >
       <Icon size={20} />
-    </motion.button>
+    </button>
   );
 };
 
-export const ActionBar: React.FC<ActionBarProps> = React.memo(({ 
+export const ActionBar: React.FC<ActionBarProps> = ({ 
   frameData, 
   frames, 
   currentFrameId, 
   onFrameChange, 
   onClose 
 }) => {
-  // Remove the old state since it's now in NavButton
-  // const [isPrevPressed, setIsPrevPressed] = useState(false);
-  // const [isNextPressed, setIsNextPressed] = useState(false);
-  
   // Find current frame index for navigation
   const currentIndex = frames.findIndex(f => f.id === currentFrameId);
   
+  console.log('[ActionBar] Rendering with:', {
+    currentFrameId,
+    currentIndex,
+    framesCount: frames.length,
+    framesWithImages: frames.filter(f => f.imageDataUrl).length
+  });
+  
   // Helper to find next/previous frame with image
   const findPrevFrameWithImage = (): FrameData | null => {
-    console.log('[ActionBar] Finding previous frame from index:', currentIndex);
-    for (let i = currentIndex - 1; i >= 0; i--) {
-      console.log(`[ActionBar] Checking frame at index ${i}:`, {
-        id: frames[i].id,
-        hasImage: !!frames[i].imageDataUrl
-      });
-      if (frames[i].imageDataUrl) return frames[i];
+    if (currentIndex > 0) {
+      return frames[currentIndex - 1];
     }
     return null;
   };
   
   const findNextFrameWithImage = (): FrameData | null => {
-    console.log('[ActionBar] Finding next frame from index:', currentIndex);
-    for (let i = currentIndex + 1; i < frames.length; i++) {
-      console.log(`[ActionBar] Checking frame at index ${i}:`, {
-        id: frames[i].id,
-        hasImage: !!frames[i].imageDataUrl
-      });
-      if (frames[i].imageDataUrl) return frames[i];
+    if (currentIndex < frames.length - 1) {
+      return frames[currentIndex + 1];
     }
     return null;
   };
@@ -146,40 +141,28 @@ export const ActionBar: React.FC<ActionBarProps> = React.memo(({
   const hasNext = !!nextFrame;
   const hasMultipleFrames = frames.filter(f => f.imageDataUrl).length > 1;
 
-  // Debug logging
-  console.log('[ActionBar] Navigation state:', {
-    currentFrameId,
-    currentIndex,
-    totalFrames: frames.length,
-    hasPrevious,
-    hasNext,
-    prevFrameId: prevFrame?.id,
-    nextFrameId: nextFrame?.id
-  });
-
   const handlePrevious = () => {
-    console.log('[ActionBar] handlePrevious called');
+    console.log('[ActionBar] Previous clicked', { 
+      prevFrame, 
+      currentIndex,
+      currentFrameId,
+      totalFrames: frames.length
+    });
     if (prevFrame) {
-      console.log('[ActionBar] Navigating to previous frame:', { 
-        from: currentFrameId,
-        to: prevFrame.id
-      });
       onFrameChange(prevFrame.id);
-    } else {
-      console.log('[ActionBar] No previous frame available');
     }
   };
 
   const handleNext = () => {
-    console.log('[ActionBar] handleNext called');
+    console.log('[ActionBar] Next clicked', { 
+      nextFrame, 
+      currentIndex,
+      currentFrameId,
+      totalFrames: frames.length,
+      hasNext 
+    });
     if (nextFrame) {
-      console.log('[ActionBar] Navigating to next frame:', { 
-        from: currentFrameId,
-        to: nextFrame.id
-      });
       onFrameChange(nextFrame.id);
-    } else {
-      console.log('[ActionBar] No next frame available');
     }
   };
 
@@ -201,33 +184,24 @@ export const ActionBar: React.FC<ActionBarProps> = React.memo(({
 
   return (
     <motion.div
-      initial={{ x: 100, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 50, opacity: 0 }}
+      initial={{ y: 100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 50, opacity: 0 }}
       transition={{ 
         duration: 0.3, 
         delay: 0.1,
         exit: { delay: 0, duration: 0.2 }
       }}
       className="
-        absolute right-6 top-1/2 -translate-y-1/2 z-20
         bg-white/10 backdrop-blur-lg rounded-2xl
         border border-white/20 shadow-2xl
-        p-2 flex flex-col gap-1
+        p-2 flex flex-row items-center gap-2
+        pointer-events-auto
       "
+      style={{ pointerEvents: 'auto' }}
     >
       {hasMultipleFrames && (
         <>
-          <button
-            onClick={() => {
-              console.log('[TEST] Simple button clicked!');
-              console.log('[TEST] Current state:', { hasPrevious, hasNext, currentFrameId });
-            }}
-            className="p-3 bg-white/20 rounded text-white"
-          >
-            TEST
-          </button>
-          
           <NavButton
             direction="prev"
             onClick={handlePrevious}
@@ -240,7 +214,7 @@ export const ActionBar: React.FC<ActionBarProps> = React.memo(({
             disabled={!hasNext}
           />
           
-          <div className="h-px bg-white/20 my-1" />
+          <div className="w-px h-8 bg-white/20 mx-1" />
         </>
       )}
 
@@ -262,7 +236,7 @@ export const ActionBar: React.FC<ActionBarProps> = React.memo(({
         onClick={handleRename}
       />
       
-      <div className="h-px bg-white/20 my-1" />
+      <div className="w-px h-8 bg-white/20 mx-1" />
       
       <ActionButton
         icon={<IconTrash size={20} />}
@@ -272,4 +246,4 @@ export const ActionBar: React.FC<ActionBarProps> = React.memo(({
       />
     </motion.div>
   );
-}); 
+}; 
