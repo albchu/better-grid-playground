@@ -90,6 +90,14 @@ export const useGridStore = create<GridStore>()((set) => ({
     }
   },
 
+  removeFrame: (id: string) => {
+    logDebug('Removing frame', { id });
+    set(s => ({
+      frames: s.frames.filter(f => f.id !== id),
+      selectedIds: new Set(Array.from(s.selectedIds).filter(selectedId => selectedId !== id))
+    }));
+  },
+
   updateFrame: (id: string, updates: Partial<FrameData>) => {
     logDebug('Updating frame', { id, updates });
     
@@ -184,9 +192,9 @@ export const useGridStore = create<GridStore>()((set) => ({
 
   clearSelection: () => {
     logDebug('Clearing selection');
-    set(s => ({
+    set({
       selectedIds: new Set(),
       selectionMode: false
-    }));
+    });
   },
 })); 

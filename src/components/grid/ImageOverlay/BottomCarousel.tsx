@@ -124,9 +124,8 @@ export const BottomCarousel: React.FC<BottomCarouselProps> = React.memo(({
         className="h-full overflow-x-auto overflow-y-hidden scrollbar-hide flex-1"
         style={{ 
           scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          WebkitScrollbar: { display: 'none' }
-        }}
+          msOverflowStyle: 'none'
+        } as React.CSSProperties}
       >
         <div className="flex items-center h-full px-16 gap-4">
           {frames.map((frame) => {

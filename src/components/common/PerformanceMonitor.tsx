@@ -48,8 +48,8 @@ export const PerformanceMonitor: React.FC = () => {
       <div>Grid: {gridColumnWidth}px</div>
       <div>Last render: {renderTime}ms</div>
       <div>Memory: {
-        'memory' in performance 
-          ? `${Math.round((performance as any).memory.usedJSHeapSize / 1048576)}MB`
+        performance.memory
+          ? `${Math.round(performance.memory.usedJSHeapSize / 1048576)}MB`
           : 'N/A'
       }</div>
     </div>

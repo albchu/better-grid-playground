@@ -50,7 +50,7 @@ async function generateRandomImage(seed: string, maxSize = 1600): Promise<ImageS
     dimensions: `${width}x${height}`
   });
   
-  const img = new Image(width, height, { kind: 'RGBA' });
+  const img = new Image(width, height);
   
   // Generate deterministic values from seed
   const hash = hashCode(seed);
@@ -62,7 +62,6 @@ async function generateRandomImage(seed: string, maxSize = 1600): Promise<ImageS
   // Pattern-specific parameters
   const frequency = 20 + (hash % 30);
   const phase = (hash % 100) / 100;
-  const rotation = (hash % 4) * 90; // 0, 90, 180, 270 degrees
   
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height; y++) {

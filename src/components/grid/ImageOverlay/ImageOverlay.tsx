@@ -1,14 +1,17 @@
-import React, { useEffect, useCallback, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useGridStore } from '../../../store/grid';
 import { useOverlayStore } from '../../../store/overlay';
-import { FrameData } from '../../../types';
+import { useKeyboardNavigation } from '../../../hooks/useKeyboardNavigation';
+import { useFrameNavigation } from '../../../hooks/useFrameNavigation';
+import { useBodyOverflow } from '../../../hooks/useBodyOverflow';
+import { CloseButton } from '../../common/CloseButton';
 import { ActionBar } from './ActionBar';
 import { BottomCarousel } from './BottomCarousel';
-import { DEBUG_CONFIG } from '../../../utils/debug';
+import { OverlayBackdrop } from './OverlayBackdrop';
+import { OverlayImage } from './OverlayImage';
+import { FrameNavigationService } from '../../../services/frameNavigation';
 
 export const ImageOverlay: React.FC = () => {
-  console.log('=== SIMPLIFIED OVERLAY VERSION 5.1 - LAYOUT FIXED ===');
   
   const frames = useGridStore(state => state.frames);
   const currentFrameId = useOverlayStore(state => state.currentFrameId);
@@ -16,159 +19,80 @@ export const ImageOverlay: React.FC = () => {
   const setCurrentFrameId = useOverlayStore(state => state.setCurrentFrameId);
   const hideOverlay = useOverlayStore(state => state.hideOverlay);
   
-  // Only get frames with images
+  // Track if mouse is over interactive elements
+  const [isOverInteractive, setIsOverInteractive] = useState(false);
+  
+  // Get frames with images using service
   const framesWithImages = useMemo(
-    () => frames.filter(f => f.imageDataUrl),
+    () => FrameNavigationService.getFramesWithImages(frames),
     [frames]
   );
   
-  console.log('[ImageOverlay] Rendering with:', {
-    totalFrames: frames.length,
-    framesWithImages: framesWithImages.length,
-    currentFrameId,
-    isVisible
-  });
-  
   // Update frame navigation
   const updateCurrentFrame = useCallback((newFrameId: string) => {
-    console.log('[ImageOverlay] updateCurrentFrame called with:', newFrameId);
     setCurrentFrameId(newFrameId);
   }, [setCurrentFrameId]);
   
+  // Use frame navigation hook
+  const navigation = useFrameNavigation(frames, currentFrameId, updateCurrentFrame);
+  
   // Get current frame data
-  const currentFrame = React.useMemo(
+  const currentFrame = useMemo(
     () => currentFrameId ? frames.find(f => f.id === currentFrameId) : null,
     [frames, currentFrameId]
   );
   
-  const currentFrameIndex = React.useMemo(
-    () => currentFrameId ? framesWithImages.findIndex(f => f.id === currentFrameId) : -1,
-    [framesWithImages, currentFrameId]
-  );
+  // Use keyboard navigation hook
+  useKeyboardNavigation({
+    enabled: isVisible && currentFrameId !== null,
+    onEscape: hideOverlay,
+    onArrowLeft: navigation.goToPrevious,
+    onArrowRight: navigation.goToNext
+  });
   
-  // Helper function to find next frame with image
-  const findNextFrameWithImage = (startIndex: number, direction: 'forward' | 'backward'): FrameData | null => {
-    if (direction === 'forward') {
-      return framesWithImages[startIndex + 1] || null;
-    } else {
-      return framesWithImages[startIndex - 1] || null;
-    }
-  };
-  
-  // Keyboard navigation
-  useEffect(() => {
-    if (!isVisible || currentFrameIndex === -1) return;
-    
-    const handleKeyDown = (e: KeyboardEvent) => {
-      switch (e.key) {
-        case 'Escape':
-          hideOverlay();
-          break;
-        case 'ArrowLeft':
-          const prevFrame = findNextFrameWithImage(currentFrameIndex, 'backward');
-          if (prevFrame) {
-            updateCurrentFrame(prevFrame.id);
-          }
-          break;
-        case 'ArrowRight':
-          const nextFrame = findNextFrameWithImage(currentFrameIndex, 'forward');
-          if (nextFrame) {
-            updateCurrentFrame(nextFrame.id);
-          }
-          break;
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [hideOverlay, currentFrameIndex, framesWithImages, updateCurrentFrame]);
-  
-  // Manage body overflow when overlay is visible
-  useEffect(() => {
-    if (isVisible) {
-      console.log('[ImageOverlay] Setting body overflow hidden');
-      document.body.style.overflow = 'hidden';
-      return () => {
-        console.log('[ImageOverlay] Resetting body overflow');
-        document.body.style.overflow = '';
-      };
-    }
-  }, [isVisible]);
+  // Manage body overflow
+  useBodyOverflow(isVisible);
   
   // Handle backdrop click
   const handleBackdropClick = useCallback(() => {
     hideOverlay();
   }, [hideOverlay]);
   
-  // Track if mouse is over interactive elements
-  const [isOverInteractive, setIsOverInteractive] = React.useState(false);
+  // Interactive state handlers
   const handleInteractiveEnter = useCallback(() => setIsOverInteractive(true), []);
   const handleInteractiveLeave = useCallback(() => setIsOverInteractive(false), []);
   
-  if (!currentFrame && DEBUG_CONFIG.enabled) {
-    console.warn('[ImageOverlay] No current frame found');
+  if (!isVisible) {
+    return null;
   }
   
   return (
-    <div
-      className="fixed inset-0 z-50 transition-all duration-300 flex flex-col"
-      style={{
-        opacity: isVisible ? 1 : 0,
-        pointerEvents: isVisible ? 'auto' : 'none',
-      }}
-    >
-      {/* Only render internals when we have a frame */}
+    <div className="fixed inset-0 z-50 transition-all duration-300 flex flex-col">
       {currentFrameId && currentFrame && (
         <>
           {/* Backdrop */}
-          <motion.div
-            className="absolute inset-0 bg-black bg-opacity-80"
+          <OverlayBackdrop 
             onClick={handleBackdropClick}
-            style={{
-              cursor: isOverInteractive ? 'default' : 'pointer'
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            isOverInteractive={isOverInteractive}
           />
           
           {/* Close button */}
-          <button 
-            onClick={hideOverlay}
-            className="absolute top-4 right-4 z-20 p-2 rounded-lg bg-white bg-opacity-10 hover:bg-opacity-20 backdrop-blur-md transition-all duration-200"
+          <div 
+            className="absolute top-4 right-4 z-20"
             onMouseEnter={handleInteractiveEnter}
             onMouseLeave={handleInteractiveLeave}
-            title="Close (Esc)"
           >
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+            <CloseButton onClick={hideOverlay} />
+          </div>
           
           {/* Main content area */}
           <div className="flex-1 flex items-center justify-center relative z-10 pointer-events-none">
-            {/* Image container */}
-            <motion.div
-              key={currentFrame.id}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="relative pointer-events-auto"
+            <OverlayImage
+              frame={currentFrame}
               onMouseEnter={handleInteractiveEnter}
               onMouseLeave={handleInteractiveLeave}
               onClick={(e) => e.stopPropagation()}
-            >
-              <img
-                src={currentFrame.imageDataUrl}
-                alt={currentFrame.label}
-                className="max-w-[90vw] max-h-[70vh] w-auto h-auto object-contain rounded-lg shadow-2xl"
-                style={{ 
-                  aspectRatio: `${currentFrame.width} / ${currentFrame.height}`
-                }}
-              />
-            </motion.div>
+            />
           </div>
           
           {/* Bottom action bar */}
@@ -183,7 +107,6 @@ export const ImageOverlay: React.FC = () => {
               frames={framesWithImages}
               currentFrameId={currentFrameId}
               onFrameChange={updateCurrentFrame}
-              onClose={hideOverlay}
             />
           </div>
           
