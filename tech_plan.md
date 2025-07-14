@@ -1,12 +1,12 @@
 ### **better-grid-playground — complete technical plan (rev 5)**
 
-(*Tailwind + Masonic grid, Framer-Motion animation, in-browser `image-js` generated images → Base-64 pipeline, and **Tabler Icons** for all glyphs.*)
+(*Tailwind + CSS columns masonry, Framer-Motion animation, in-browser `image-js` generated images → Base-64 pipeline, and **Tabler Icons** for all glyphs.*)
 
 ---
 
 ## 1 · Project goals
 
-1. Display a responsive, virtualised masonry grid of **`FrameCard`** items that always respect each card's true aspect ratio.
+1. Display a responsive masonry grid of **`FrameCard`** items that always respect each card's true aspect ratio.
 2. Let users **add**, **delete**, **select** and **refresh (new image)** cards; every layout change animates smoothly via Framer Motion.
 3. Every card image is generated using **image-js in a Web Worker**, encoded to a PNG **Base-64 data URI**, stored in Zustand, and rendered from memory for instant redraws.
 4. Grid automatically reflows when browser window is resized to test layout responsiveness.
@@ -18,7 +18,7 @@
 
 | Concern               | Library / tech                                              | Reason / notes                                                                              |
 | --------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| Grid + virtualisation | **`masonic`**                                               | High-level `<Masonry>` component handles window & container size, unmounts off-screen items |
+| Grid layout           | **CSS columns**                                             | Native CSS masonry layout using column-count, column-width, and break-inside-avoid          |
 | Layout animation      | **Framer Motion v8**                                        | `layout` prop gives automatic FLIP animations                                               |
 | Global state          | **Zustand**                                                 | Selector-based subscriptions; holds Base-64 strings in memory for snappy re-use             |
 | Styling               | **Tailwind CSS v3**                                         | Utility classes; dynamic aspect ratio via inline style                                      |
@@ -27,7 +27,7 @@
 | Build                 | Vite + TypeScript + ESLint + Prettier + Vitest + Playwright | Worker bundling via `?worker&inline`                                                        |
 
 ```bash
-npm i masonic framer-motion zustand @tabler/icons-react image-js comlink tailwindcss @types/uuid
+npm i framer-motion zustand @tabler/icons-react image-js comlink tailwindcss @types/uuid
 ```
 
 ---
@@ -59,7 +59,7 @@ export interface FrameData {
  └─ </ImageSourceProvider>
 ```
 
-* `<FramesGrid>` wraps Masonic; `<FrameCard>` root is `motion.div layout`.
+* `<FramesGrid>` uses CSS columns for masonry layout; `<FrameCard>` root is `motion.div layout`.
 * Browser window resize triggers automatic grid reflow for testing.
 
 ---
@@ -297,7 +297,7 @@ const ControlPanel = () => {
 
 * **All PNG Base-64 strings persist in Zustand** → instant repaint when items remount.
 * One worker with image-js generates images off main thread; queue length 4 balances speed & RAM.
-* Masonic unmounts off-screen DOM so React tree stays tiny.
+* CSS columns provides native browser optimization for masonry layout.
 * Inline `aspect-ratio` eliminates CLS.
 * Generated images allow precise control over dimensions for stress testing.
 
@@ -352,7 +352,7 @@ The plan now generates test images directly using **image-js** in a worker, remo
 
 ### Package versions
 All packages mentioned are current as of January 2025:
-- `masonic@4.0.1` - Latest stable version
+- CSS columns layout - Native browser support
 - `framer-motion@11.15.0` - Latest v11
 - `react@19.0.0` & `react-dom@19.0.0` - Latest React 19
 - `zustand@5.0.2` - Latest v5
@@ -375,10 +375,10 @@ All packages mentioned are current as of January 2025:
    // Or create more complex patterns
    ```
 
-3. **Masonic configuration**: The `masonic` library requires:
-   - A `render` prop that returns the component for each item
-   - An `items` array from the Zustand store
-   - Column width configuration via `columnWidth` prop
+3. **CSS columns configuration**: The CSS columns layout requires:
+   - Setting `column-count: auto` and `column-width` for responsive columns
+   - Using `break-inside-avoid` on items to prevent splitting across columns
+   - Dynamic `column-gap` for spacing between columns
    
 4. **Zustand store typing**: Define proper TypeScript interfaces:
    ```typescript
@@ -402,7 +402,7 @@ All packages mentioned are current as of January 2025:
 
 - The Web Worker prevents UI blocking during image generation
 - Base64 data URLs are stored in memory - consider implementing a maximum frame limit
-- Masonic's virtualization ensures only visible items are rendered
+- CSS columns layout automatically handles responsive reflow
 - Use React.memo() on FrameCard to prevent unnecessary re-renders
 
 This document now contains all necessary details for a fresh implementation.
