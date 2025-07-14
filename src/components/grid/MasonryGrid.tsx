@@ -19,7 +19,7 @@ export const MasonryGrid: React.FC = () => {
 
   if (!frames || frames.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-gray-500">
+      <div className="flex items-center justify-center h-64 text-gray-400">
         <div className="text-center">
           <p className="text-lg mb-2">No frames yet</p>
           <p className="text-sm">Click "Add Frame" to get started</p>

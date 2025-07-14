@@ -12,7 +12,7 @@ export const ControlPanel: React.FC = () => {
   const { addFrame, toggleSelectionMode, deleteSelected } = useGridActions();
 
   return (
-    <div className="flex flex-wrap gap-2 p-3 border-b bg-white shadow-sm">
+    <div className="flex flex-wrap gap-2 p-3 border-b border-gray-700 bg-gray-800 shadow-lg">
       <div className="flex gap-2">
         <button onClick={addFrame} className="btn-primary">
           <IconPlus className="mr-1" size={18} stroke={2}/> Add Frame
@@ -31,15 +31,15 @@ export const ControlPanel: React.FC = () => {
         )}
 
         {selectionMode && (
-          <span className="ml-2 self-center text-sm text-gray-600">
+          <span className="ml-2 self-center text-sm text-gray-400">
             {selectedCount} selected
           </span>
         )}
       </div>
 
       <div className="ml-auto flex items-center gap-1">
-        <span className="text-sm text-gray-600 mr-2 font-medium">Grid Size:</span>
-        <div className="flex gap-1 p-1 bg-gray-100 rounded-md">
+        <span className="text-sm text-gray-400 mr-2 font-medium">Grid Size:</span>
+        <div className="flex gap-1 p-1 bg-gray-700 rounded-md">
           {GRID_SIZE_PRESETS.map(size => (
             <button
               key={size}
@@ -47,8 +47,8 @@ export const ControlPanel: React.FC = () => {
               className={clsx(
                 'px-2.5 py-1 text-sm font-medium rounded transition-all duration-200',
                 gridColumnWidth === size
-                  ? 'bg-white text-indigo-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'bg-gray-900 text-indigo-400 shadow-sm'
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-600'
               )}
               title={`Set grid size to ${size}px`}
             >

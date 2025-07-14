@@ -16,7 +16,7 @@ interface FrameCardProps {
 export const FrameCard: React.FC<FrameCardProps> = ({ data }) => {
   const selectionMode = useGridStore(s => s.selectionMode);
   const isSelected = useGridStore(s => s.selectedIds.has(data.id));
-  const showFrameEditor = useFrameEditorStore(s => s.showFrameEditor);
+  const setCurrentFrameId = useFrameEditorStore(s => s.setCurrentFrameId);
   const { refreshFrameImage, toggleSelect, updateFrame } = useGridActions();
 
   useEffect(() => {
@@ -35,9 +35,9 @@ export const FrameCard: React.FC<FrameCardProps> = ({ data }) => {
       console.log('[FrameCard] Clicked in selection mode:', { id: data.id });
       toggleSelect(data.id);
     } else if (!selectionMode && data.imageDataUrl) {
-      // Open frame editor using global state
-      console.log('[FrameCard] Opening frame editor:', { id: data.id });
-      showFrameEditor(data.id);
+      // Select frame in editor
+      console.log('[FrameCard] Selecting frame in editor:', { id: data.id });
+      setCurrentFrameId(data.id);
     }
   };
 
@@ -62,8 +62,8 @@ export const FrameCard: React.FC<FrameCardProps> = ({ data }) => {
       whileTap={{ scale: 1.02 }}
       onClick={handleClick}
       className={clsx(
-        "rounded shadow bg-white overflow-hidden transition-shadow",
-        "hover:shadow-lg",
+        "rounded shadow-lg bg-gray-800 overflow-hidden transition-shadow",
+        "hover:shadow-xl",
         selectionMode && "cursor-pointer",
         isSelected && "ring-4 ring-indigo-500",
         !selectionMode && data.imageDataUrl && "cursor-zoom-in"
@@ -71,7 +71,7 @@ export const FrameCard: React.FC<FrameCardProps> = ({ data }) => {
     >
       <div
         style={{ aspectRatio: `${data.width} / ${data.height}` }}
-        className="overflow-hidden bg-neutral-200"
+        className="overflow-hidden bg-gray-700"
       >
         {data.imageDataUrl ? (
           <img
@@ -88,7 +88,7 @@ export const FrameCard: React.FC<FrameCardProps> = ({ data }) => {
         )}
       </div>
 
-      <footer className="flex items-center justify-between px-2 py-1 text-sm text-gray-600">
+      <footer className="flex items-center justify-between px-2 py-1 text-sm text-gray-300">
         <EditableLabel
           value={data.label}
           onChange={(label) => {
@@ -98,7 +98,7 @@ export const FrameCard: React.FC<FrameCardProps> = ({ data }) => {
         />
         <button
           onClick={handleRefresh}
-          className="p-1 hover:bg-gray-100 rounded transition-colors"
+          className="p-1 hover:bg-gray-700 rounded transition-colors"
           title="Generate new image"
         >
           <IconRefresh size={16} />

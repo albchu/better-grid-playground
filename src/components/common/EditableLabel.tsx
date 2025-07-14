@@ -49,7 +49,7 @@ export const EditableLabel: React.FC<EditableLabelProps> = ({
         onChange={(e) => setEditValue(e.target.value)}
         onBlur={handleSubmit}
         onKeyDown={handleKeyDown}
-        className={`px-1 py-0 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 ${className}`}
+        className={`px-1 py-0 bg-gray-700 border border-gray-600 rounded text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-200 ${className}`}
       />
     );
   }
@@ -57,7 +57,7 @@ export const EditableLabel: React.FC<EditableLabelProps> = ({
   return (
     <span 
       onClick={() => setIsEditing(true)}
-      className={`cursor-pointer hover:bg-gray-100 px-1 rounded ${className}`}
+      className={`cursor-pointer hover:bg-gray-700 px-1 rounded ${className}`}
     >
       {value}
     </span>
