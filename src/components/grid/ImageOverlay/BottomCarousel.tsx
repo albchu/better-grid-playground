@@ -143,8 +143,10 @@ export const BottomCarousel: React.FC<BottomCarouselProps> = ({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => {
-                  console.log('[BottomCarousel] Frame selected:', { id: frame.id });
-                  onFrameSelect(frame.id);
+                  if (frame.imageDataUrl) {
+                    console.log('[BottomCarousel] Frame selected:', { id: frame.id });
+                    onFrameSelect(frame.id);
+                  }
                 }}
                 className={clsx(
                   "relative flex-shrink-0 cursor-pointer rounded-lg overflow-hidden transition-all duration-200",
@@ -164,7 +166,9 @@ export const BottomCarousel: React.FC<BottomCarouselProps> = ({
                     decoding="async"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gray-700" />
+                  <div className="w-full h-full bg-gray-700 flex items-center justify-center">
+                    <div className="w-8 h-8 border-2 border-gray-500 border-t-transparent rounded-full animate-spin" />
+                  </div>
                 )}
                 
                 {/* Active indicator */}

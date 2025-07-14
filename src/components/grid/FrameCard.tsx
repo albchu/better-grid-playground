@@ -107,9 +107,10 @@ export const FrameCard: React.FC<FrameCardProps> = ({ data }) => {
         </footer>
       </motion.div>
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isOverlayOpen && (
           <ImageOverlay
+            key="image-overlay"
             initialFrameId={data.id}
             onClose={() => setIsOverlayOpen(false)}
           />

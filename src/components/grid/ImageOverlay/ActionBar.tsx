@@ -59,35 +59,127 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   );
 };
 
-export const ActionBar: React.FC<ActionBarProps> = ({ 
+interface NavButtonProps {
+  direction: 'prev' | 'next';
+  onClick: () => void;
+  disabled: boolean;
+}
+
+const NavButton: React.FC<NavButtonProps> = ({ direction, onClick, disabled }) => {
+  // const [isPressed, setIsPressed] = useState(false);
+  
+  const isPrev = direction === 'prev';
+  const Icon = isPrev ? IconPlayerTrackPrev : IconPlayerTrackNext;
+    
+  return (
+    <motion.button
+      whileHover={disabled ? {} : { scale: 1.1 }}
+      whileTap={disabled ? {} : { scale: 0.95 }}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log(`[NavButton] ${direction} button clicked, disabled: ${disabled}`);
+        if (!disabled) {
+          onClick();
+        }
+      }}
+      // onPointerDown={() => !disabled && setIsPressed(true)}
+      // onPointerUp={() => setIsPressed(false)}
+      // onPointerLeave={() => setIsPressed(false)}
+      disabled={disabled}
+      className={`
+        p-3 rounded-xl transition-all duration-200
+        text-white/80 hover:text-white
+        ${disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white/20'}
+      `}
+      title={isPrev ? "Previous" : "Next"}
+      aria-label={isPrev ? "Previous" : "Next"}
+      type="button"
+    >
+      <Icon size={20} />
+    </motion.button>
+  );
+};
+
+export const ActionBar: React.FC<ActionBarProps> = React.memo(({ 
   frameData, 
   frames, 
   currentFrameId, 
   onFrameChange, 
   onClose 
 }) => {
-  const [isPrevPressed, setIsPrevPressed] = useState(false);
-  const [isNextPressed, setIsNextPressed] = useState(false);
+  // Remove the old state since it's now in NavButton
+  // const [isPrevPressed, setIsPrevPressed] = useState(false);
+  // const [isNextPressed, setIsNextPressed] = useState(false);
   
   // Find current frame index for navigation
   const currentIndex = frames.findIndex(f => f.id === currentFrameId);
-  const hasPrevious = currentIndex > 0;
-  const hasNext = currentIndex < frames.length - 1;
-  const hasMultipleFrames = frames.length > 1;
+  
+  // Helper to find next/previous frame with image
+  const findPrevFrameWithImage = (): FrameData | null => {
+    console.log('[ActionBar] Finding previous frame from index:', currentIndex);
+    for (let i = currentIndex - 1; i >= 0; i--) {
+      console.log(`[ActionBar] Checking frame at index ${i}:`, {
+        id: frames[i].id,
+        hasImage: !!frames[i].imageDataUrl
+      });
+      if (frames[i].imageDataUrl) return frames[i];
+    }
+    return null;
+  };
+  
+  const findNextFrameWithImage = (): FrameData | null => {
+    console.log('[ActionBar] Finding next frame from index:', currentIndex);
+    for (let i = currentIndex + 1; i < frames.length; i++) {
+      console.log(`[ActionBar] Checking frame at index ${i}:`, {
+        id: frames[i].id,
+        hasImage: !!frames[i].imageDataUrl
+      });
+      if (frames[i].imageDataUrl) return frames[i];
+    }
+    return null;
+  };
+  
+  const prevFrame = findPrevFrameWithImage();
+  const nextFrame = findNextFrameWithImage();
+  const hasPrevious = !!prevFrame;
+  const hasNext = !!nextFrame;
+  const hasMultipleFrames = frames.filter(f => f.imageDataUrl).length > 1;
+
+  // Debug logging
+  console.log('[ActionBar] Navigation state:', {
+    currentFrameId,
+    currentIndex,
+    totalFrames: frames.length,
+    hasPrevious,
+    hasNext,
+    prevFrameId: prevFrame?.id,
+    nextFrameId: nextFrame?.id
+  });
 
   const handlePrevious = () => {
-    if (hasPrevious) {
-      const prevFrame = frames[currentIndex - 1];
+    console.log('[ActionBar] handlePrevious called');
+    if (prevFrame) {
+      console.log('[ActionBar] Navigating to previous frame:', { 
+        from: currentFrameId,
+        to: prevFrame.id
+      });
       onFrameChange(prevFrame.id);
-      console.log('[ActionBar] Navigate to previous frame:', { id: prevFrame.id });
+    } else {
+      console.log('[ActionBar] No previous frame available');
     }
   };
 
   const handleNext = () => {
-    if (hasNext) {
-      const nextFrame = frames[currentIndex + 1];
+    console.log('[ActionBar] handleNext called');
+    if (nextFrame) {
+      console.log('[ActionBar] Navigating to next frame:', { 
+        from: currentFrameId,
+        to: nextFrame.id
+      });
       onFrameChange(nextFrame.id);
-      console.log('[ActionBar] Navigate to next frame:', { id: nextFrame.id });
+    } else {
+      console.log('[ActionBar] No next frame available');
     }
   };
 
@@ -126,51 +218,27 @@ export const ActionBar: React.FC<ActionBarProps> = ({
     >
       {hasMultipleFrames && (
         <>
-          <motion.button
-            whileHover={!hasPrevious ? {} : { scale: 1.1 }}
-            whileTap={!hasPrevious ? {} : { scale: 0.95 }}
-            onMouseDown={() => setIsPrevPressed(true)}
-            onMouseUp={() => setIsPrevPressed(false)}
-            onMouseLeave={() => setIsPrevPressed(false)}
+          <button
+            onClick={() => {
+              console.log('[TEST] Simple button clicked!');
+              console.log('[TEST] Current state:', { hasPrevious, hasNext, currentFrameId });
+            }}
+            className="p-3 bg-white/20 rounded text-white"
+          >
+            TEST
+          </button>
+          
+          <NavButton
+            direction="prev"
             onClick={handlePrevious}
             disabled={!hasPrevious}
-            className={`
-              p-3 rounded-xl transition-all duration-200
-              text-white/80 hover:text-white
-              ${!hasPrevious ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white/20'}
-            `}
-            title="Previous"
-            aria-label="Previous"
-          >
-            {isPrevPressed && hasPrevious ? (
-              <IconPlayerTrackPrevFilled size={20} />
-            ) : (
-              <IconPlayerTrackPrev size={20} />
-            )}
-          </motion.button>
+          />
           
-          <motion.button
-            whileHover={!hasNext ? {} : { scale: 1.1 }}
-            whileTap={!hasNext ? {} : { scale: 0.95 }}
-            onMouseDown={() => setIsNextPressed(true)}
-            onMouseUp={() => setIsNextPressed(false)}
-            onMouseLeave={() => setIsNextPressed(false)}
+          <NavButton
+            direction="next"
             onClick={handleNext}
             disabled={!hasNext}
-            className={`
-              p-3 rounded-xl transition-all duration-200
-              text-white/80 hover:text-white
-              ${!hasNext ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white/20'}
-            `}
-            title="Next"
-            aria-label="Next"
-          >
-            {isNextPressed && hasNext ? (
-              <IconPlayerTrackNextFilled size={20} />
-            ) : (
-              <IconPlayerTrackNext size={20} />
-            )}
-          </motion.button>
+          />
           
           <div className="h-px bg-white/20 my-1" />
         </>
@@ -204,4 +272,4 @@ export const ActionBar: React.FC<ActionBarProps> = ({
       />
     </motion.div>
   );
-}; 
+}); 
