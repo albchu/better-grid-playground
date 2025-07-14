@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useGridStore } from '../../store/grid';
+import { useFrameEditorStore } from '../../store/frameEditor';
 import { FrameCard } from './FrameCard';
 
 export const MasonryGrid: React.FC = () => {
   const frames = useGridStore(s => s.frames);
   const gridColumnWidth = useGridStore(s => s.gridColumnWidth);
+  const currentFrameId = useFrameEditorStore(s => s.currentFrameId);
 
   // Log frame count changes
   useEffect(() => {
@@ -45,7 +47,10 @@ export const MasonryGrid: React.FC = () => {
               className="break-inside-avoid mb-4 transition-all duration-300"
               style={{ display: 'inline-block', width: '100%' }}
             >
-              <FrameCard data={frame} />
+              <FrameCard 
+                data={frame} 
+                isCurrent={frame.id === currentFrameId}
+              />
             </div>
           ))}
         </AnimatePresence>

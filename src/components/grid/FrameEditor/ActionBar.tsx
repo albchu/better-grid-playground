@@ -8,12 +8,11 @@ import {
 } from '@tabler/icons-react';
 import type { FrameData } from '../../../types';
 import { NavigationButton } from '../../common/NavigationButton';
-import { useFrameNavigation } from '../../../hooks/useFrameNavigation';
 
 interface ActionBarProps {
   frameData: FrameData;
   frames: FrameData[];
-  currentFrameId: string;
+  currentFrameId: string | null;
   onFrameChange: (frameId: string) => void;
 }
 
@@ -64,9 +63,35 @@ export const ActionBar: React.FC<ActionBarProps> = ({
   currentFrameId, 
   onFrameChange
 }) => {
-  // Use frame navigation hook
-  const navigation = useFrameNavigation(frames, currentFrameId, onFrameChange);
-  const hasMultipleFrames = frames.filter(f => f.imageDataUrl).length > 1;
+  // Filter frames with images and find current index
+  const framesWithImages = frames.filter(f => f.imageDataUrl);
+  const currentIndex = currentFrameId 
+    ? framesWithImages.findIndex(f => f.id === currentFrameId)
+    : -1;
+  const hasMultipleFrames = framesWithImages.length > 1;
+
+  // Navigation functions with wraparound
+  const goToPrevious = () => {
+    if (!hasMultipleFrames || currentIndex === -1 || !currentFrameId) return;
+    
+    // Wrap around to last frame if at the beginning
+    const prevIndex = currentIndex === 0 
+      ? framesWithImages.length - 1 
+      : currentIndex - 1;
+    
+    onFrameChange(framesWithImages[prevIndex].id);
+  };
+
+  const goToNext = () => {
+    if (!hasMultipleFrames || currentIndex === -1 || !currentFrameId) return;
+    
+    // Wrap around to first frame if at the end
+    const nextIndex = currentIndex === framesWithImages.length - 1 
+      ? 0 
+      : currentIndex + 1;
+    
+    onFrameChange(framesWithImages[nextIndex].id);
+  };
 
   const handleRotate = () => {
     console.log('[ActionBar] Rotate clicked:', { id: frameData.id });
@@ -106,14 +131,14 @@ export const ActionBar: React.FC<ActionBarProps> = ({
         <>
           <NavigationButton
             direction="prev"
-            onClick={navigation.goToPrevious}
-            disabled={!navigation.hasPrevious}
+            onClick={goToPrevious}
+            disabled={false}
           />
           
           <NavigationButton
             direction="next"
-            onClick={navigation.goToNext}
-            disabled={!navigation.hasNext}
+            onClick={goToNext}
+            disabled={false}
           />
           
           <div className="w-px h-8 bg-gray-600/50 mx-1" />

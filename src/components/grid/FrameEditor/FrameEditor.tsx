@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useGridStore } from '../../../store/grid';
 import { useFrameEditorStore } from '../../../store/frameEditor';
 import { useKeyboardNavigation } from '../../../hooks/useKeyboardNavigation';
@@ -6,10 +6,12 @@ import { useFrameNavigation } from '../../../hooks/useFrameNavigation';
 import { ActionBar } from './ActionBar';
 import { FrameEditorImage } from './FrameEditorImage';
 import { FrameNavigationService } from '../../../services/frameNavigation';
+import { EditableLabel } from '../../common/EditableLabel';
 
 export const FrameEditor: React.FC = () => {
   
   const frames = useGridStore(state => state.frames);
+  const updateFrame = useGridStore(state => state.updateFrame);
   const currentFrameId = useFrameEditorStore(state => state.currentFrameId);
   const setCurrentFrameId = useFrameEditorStore(state => state.setCurrentFrameId);
   
@@ -60,8 +62,19 @@ export const FrameEditor: React.FC = () => {
   
   return (
     <div className="h-full bg-gray-800 relative overflow-hidden">
+      {/* Frame title at the top */}
+      <div className="absolute top-4 left-0 right-0 flex justify-center z-10">
+        <div className="bg-gray-900 bg-opacity-80 backdrop-blur-sm px-4 py-2 rounded-lg">
+          <EditableLabel
+            value={currentFrame.label}
+            onChange={(label) => updateFrame(currentFrame.id, { label })}
+            className="text-lg text-gray-200 font-medium"
+          />
+        </div>
+      </div>
+      
       {/* Main content area - with calculated height */}
-      <div className="absolute inset-0 pb-24 flex items-center justify-center p-4">
+      <div className="absolute inset-0 pt-20 pb-24 flex items-center justify-center p-4">
         <FrameEditorImage
           frame={currentFrame}
           onClick={(e) => e.stopPropagation()}
@@ -73,7 +86,7 @@ export const FrameEditor: React.FC = () => {
         <ActionBar
           frameData={currentFrame}
           frames={framesWithImages}
-          currentFrameId={currentFrameId}
+          currentFrameId={currentFrameId!}
           onFrameChange={updateCurrentFrame}
         />
       </div>

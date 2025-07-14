@@ -24,7 +24,7 @@ export const FrameEditorImage: React.FC<FrameEditorImageProps> = ({
       <img
         src={frame.imageDataUrl!}
         alt={frame.label}
-        className="max-w-full max-h-full w-auto h-auto object-contain rounded-lg shadow-lg"
+        className="max-w-full max-h-full w-auto h-auto object-contain shadow-lg"
         style={{ 
           aspectRatio: `${frame.width} / ${frame.height}`,
           maxHeight: 'calc(100% - 2rem)' // Additional safety margin

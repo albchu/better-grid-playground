@@ -11,9 +11,10 @@ import { EditableLabel } from '../common/EditableLabel';
 
 interface FrameCardProps {
   data: FrameData;
+  isCurrent?: boolean;
 }
 
-export const FrameCard: React.FC<FrameCardProps> = ({ data }) => {
+export const FrameCard: React.FC<FrameCardProps> = ({ data, isCurrent = false }) => {
   const selectionMode = useGridStore(s => s.selectionMode);
   const isSelected = useGridStore(s => s.selectedIds.has(data.id));
   const setCurrentFrameId = useFrameEditorStore(s => s.setCurrentFrameId);
@@ -52,22 +53,27 @@ export const FrameCard: React.FC<FrameCardProps> = ({ data }) => {
     <motion.div
       layout
       initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
+      animate={{ 
+        opacity: 1, 
+        scale: isCurrent ? 1.05 : 1
+      }}
       exit={{ opacity: 0, scale: 0.8 }}
       whileHover={{ 
-        scale: 1.05,
-        borderRadius: 0,
+        scale: 1.02,
         transition: { duration: 0.2 }
       }}
       whileTap={{ scale: 1.02 }}
       onClick={handleClick}
       className={clsx(
-        "rounded shadow-lg bg-gray-800 overflow-hidden transition-shadow",
+        "rounded shadow-lg bg-gray-800 overflow-hidden transition-all duration-300",
         "hover:shadow-xl",
         selectionMode && "cursor-pointer",
         isSelected && "ring-4 ring-indigo-500",
-        !selectionMode && data.imageDataUrl && "cursor-zoom-in"
+        isCurrent && "ring-4 ring-blue-500 shadow-2xl shadow-blue-500/20",
       )}
+      style={{
+        transition: 'transform 300ms ease-in-out, box-shadow 300ms ease-in-out',
+      }}
     >
       <div
         style={{ aspectRatio: `${data.width} / ${data.height}` }}

@@ -50,15 +50,15 @@ function App() {
 
   return (
     <ImageSourceProvider>
-      <div className="min-h-screen bg-gray-900 text-white">
-        <div className="p-4">
+      <div className="h-screen bg-gray-900 text-white flex flex-col overflow-hidden">
+        <div className="p-4 flex-shrink-0">
           <h1 className="text-2xl font-bold mb-2">Better Grid Playground</h1>
           
           <ControlPanel />
         </div>
         
         {/* Main content area with side-by-side layout */}
-        <div ref={containerRef} className="flex h-[calc(100vh-120px)] relative">
+        <div ref={containerRef} className="flex flex-1 relative overflow-hidden">
           {/* Left side: MasonryGrid */}
           <div 
             className="overflow-y-auto"
