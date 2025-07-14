@@ -32,20 +32,30 @@ export const BottomCarousel: React.FC<BottomCarouselProps> = ({
 
   // Auto-scroll to current item when it changes
   useEffect(() => {
-    if (currentItemRef.current && scrollContainerRef.current) {
-      const container = scrollContainerRef.current;
-      const item = currentItemRef.current;
-      
-      // Calculate scroll position to center the current item
-      const itemCenter = item.offsetLeft + item.offsetWidth / 2;
-      const containerCenter = container.offsetWidth / 2;
-      const scrollLeft = itemCenter - containerCenter;
-      
-      container.scrollTo({
-        left: scrollLeft,
-        behavior: 'smooth'
-      });
-    }
+    // Small delay to ensure DOM updates and refs are set
+    const scrollTimeout = setTimeout(() => {
+      if (currentItemRef.current && scrollContainerRef.current) {
+        const container = scrollContainerRef.current;
+        const item = currentItemRef.current;
+        
+        // Calculate scroll position to center the current item
+        const itemCenter = item.offsetLeft + item.offsetWidth / 2;
+        const containerCenter = container.offsetWidth / 2;
+        const scrollLeft = itemCenter - containerCenter;
+        
+        container.scrollTo({
+          left: scrollLeft,
+          behavior: 'smooth'
+        });
+        
+        console.log('[BottomCarousel] Auto-scrolled to current item:', { 
+          frameId: currentFrameId,
+          scrollLeft 
+        });
+      }
+    }, 50); // Small delay to ensure refs are updated
+    
+    return () => clearTimeout(scrollTimeout);
   }, [currentFrameId]);
 
   // Check scroll position on mount and when frames change

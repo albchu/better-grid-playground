@@ -1,15 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   IconRotateClockwise,
   IconDeviceFloppy,
   IconTrash,
-  IconEdit
+  IconEdit,
+  IconPlayerTrackPrev,
+  IconPlayerTrackNext,
+  IconPlayerTrackPrevFilled,
+  IconPlayerTrackNextFilled
 } from '@tabler/icons-react';
 import type { FrameData } from '../../../types';
 
 interface ActionBarProps {
   frameData: FrameData;
+  frames: FrameData[];
+  currentFrameId: string;
+  onFrameChange: (frameId: string) => void;
   onClose: () => void;
 }
 
@@ -18,13 +25,15 @@ interface ActionButtonProps {
   label: string;
   onClick: () => void;
   variant?: 'default' | 'danger';
+  disabled?: boolean;
 }
 
 const ActionButton: React.FC<ActionButtonProps> = ({ 
   icon, 
   label, 
   onClick, 
-  variant = 'default' 
+  variant = 'default',
+  disabled = false
 }) => {
   const variantClasses = {
     default: 'hover:bg-white/20',
@@ -33,13 +42,14 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 
   return (
     <motion.button
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={disabled ? {} : { scale: 1.1 }}
+      whileTap={disabled ? {} : { scale: 0.95 }}
       onClick={onClick}
+      disabled={disabled}
       className={`
         p-3 rounded-xl transition-all duration-200
         text-white/80 hover:text-white
-        ${variantClasses[variant]}
+        ${disabled ? 'opacity-40 cursor-not-allowed' : variantClasses[variant]}
       `}
       title={label}
       aria-label={label}
@@ -49,7 +59,38 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   );
 };
 
-export const ActionBar: React.FC<ActionBarProps> = ({ frameData, onClose }) => {
+export const ActionBar: React.FC<ActionBarProps> = ({ 
+  frameData, 
+  frames, 
+  currentFrameId, 
+  onFrameChange, 
+  onClose 
+}) => {
+  const [isPrevPressed, setIsPrevPressed] = useState(false);
+  const [isNextPressed, setIsNextPressed] = useState(false);
+  
+  // Find current frame index for navigation
+  const currentIndex = frames.findIndex(f => f.id === currentFrameId);
+  const hasPrevious = currentIndex > 0;
+  const hasNext = currentIndex < frames.length - 1;
+  const hasMultipleFrames = frames.length > 1;
+
+  const handlePrevious = () => {
+    if (hasPrevious) {
+      const prevFrame = frames[currentIndex - 1];
+      onFrameChange(prevFrame.id);
+      console.log('[ActionBar] Navigate to previous frame:', { id: prevFrame.id });
+    }
+  };
+
+  const handleNext = () => {
+    if (hasNext) {
+      const nextFrame = frames[currentIndex + 1];
+      onFrameChange(nextFrame.id);
+      console.log('[ActionBar] Navigate to next frame:', { id: nextFrame.id });
+    }
+  };
+
   const handleRotate = () => {
     console.log('[ActionBar] Rotate clicked:', { id: frameData.id });
   };
@@ -83,6 +124,58 @@ export const ActionBar: React.FC<ActionBarProps> = ({ frameData, onClose }) => {
         p-2 flex flex-col gap-1
       "
     >
+      {hasMultipleFrames && (
+        <>
+          <motion.button
+            whileHover={!hasPrevious ? {} : { scale: 1.1 }}
+            whileTap={!hasPrevious ? {} : { scale: 0.95 }}
+            onMouseDown={() => setIsPrevPressed(true)}
+            onMouseUp={() => setIsPrevPressed(false)}
+            onMouseLeave={() => setIsPrevPressed(false)}
+            onClick={handlePrevious}
+            disabled={!hasPrevious}
+            className={`
+              p-3 rounded-xl transition-all duration-200
+              text-white/80 hover:text-white
+              ${!hasPrevious ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white/20'}
+            `}
+            title="Previous"
+            aria-label="Previous"
+          >
+            {isPrevPressed && hasPrevious ? (
+              <IconPlayerTrackPrevFilled size={20} />
+            ) : (
+              <IconPlayerTrackPrev size={20} />
+            )}
+          </motion.button>
+          
+          <motion.button
+            whileHover={!hasNext ? {} : { scale: 1.1 }}
+            whileTap={!hasNext ? {} : { scale: 0.95 }}
+            onMouseDown={() => setIsNextPressed(true)}
+            onMouseUp={() => setIsNextPressed(false)}
+            onMouseLeave={() => setIsNextPressed(false)}
+            onClick={handleNext}
+            disabled={!hasNext}
+            className={`
+              p-3 rounded-xl transition-all duration-200
+              text-white/80 hover:text-white
+              ${!hasNext ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white/20'}
+            `}
+            title="Next"
+            aria-label="Next"
+          >
+            {isNextPressed && hasNext ? (
+              <IconPlayerTrackNextFilled size={20} />
+            ) : (
+              <IconPlayerTrackNext size={20} />
+            )}
+          </motion.button>
+          
+          <div className="h-px bg-white/20 my-1" />
+        </>
+      )}
+
       <ActionButton
         icon={<IconRotateClockwise size={20} />}
         label="Rotate"

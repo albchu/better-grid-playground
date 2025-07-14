@@ -123,6 +123,9 @@ export const ImageOverlay: React.FC<ImageOverlayProps> = ({ initialFrameId, onCl
         {/* Action bar */}
         <ActionBar
           frameData={currentFrame}
+          frames={frames}
+          currentFrameId={currentFrameId}
+          onFrameChange={setCurrentFrameId}
           onClose={onClose}
         />
       </div>
