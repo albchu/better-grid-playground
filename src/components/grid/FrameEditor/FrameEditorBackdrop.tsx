@@ -1,12 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-interface OverlayBackdropProps {
+interface FrameEditorBackdropProps {
   onClick: () => void;
   isOverInteractive: boolean;
 }
 
-export const OverlayBackdrop: React.FC<OverlayBackdropProps> = ({
+export const FrameEditorBackdrop: React.FC<FrameEditorBackdropProps> = ({
   onClick,
   isOverInteractive
 }) => {

@@ -4,7 +4,7 @@ import { IconRefresh } from '@tabler/icons-react';
 import clsx from 'clsx';
 import type { FrameData } from '../../types';
 import { useGridStore } from '../../store/grid';
-import { useOverlayStore } from '../../store/overlay';
+import { useFrameEditorStore } from '../../store/frameEditor';
 import { useGridActions } from '../../hooks/useGridActions';
 import { Skeleton } from '../common/Skeleton';
 import { EditableLabel } from '../common/EditableLabel';
@@ -16,7 +16,7 @@ interface FrameCardProps {
 export const FrameCard: React.FC<FrameCardProps> = ({ data }) => {
   const selectionMode = useGridStore(s => s.selectionMode);
   const isSelected = useGridStore(s => s.selectedIds.has(data.id));
-  const showOverlay = useOverlayStore(s => s.showOverlay);
+  const showFrameEditor = useFrameEditorStore(s => s.showFrameEditor);
   const { refreshFrameImage, toggleSelect, updateFrame } = useGridActions();
 
   useEffect(() => {
@@ -35,9 +35,9 @@ export const FrameCard: React.FC<FrameCardProps> = ({ data }) => {
       console.log('[FrameCard] Clicked in selection mode:', { id: data.id });
       toggleSelect(data.id);
     } else if (!selectionMode && data.imageDataUrl) {
-      // Open overlay using global state
-      console.log('[FrameCard] Opening overlay:', { id: data.id });
-      showOverlay(data.id);
+      // Open frame editor using global state
+      console.log('[FrameCard] Opening frame editor:', { id: data.id });
+      showFrameEditor(data.id);
     }
   };
 

@@ -2,14 +2,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import type { FrameData } from '../../../types';
 
-interface OverlayImageProps {
+interface FrameEditorImageProps {
   frame: FrameData;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   onClick: (e: React.MouseEvent) => void;
 }
 
-export const OverlayImage: React.FC<OverlayImageProps> = ({
+export const FrameEditorImage: React.FC<FrameEditorImageProps> = ({
   frame,
   onMouseEnter,
   onMouseLeave,

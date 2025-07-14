@@ -1,23 +1,23 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useGridStore } from '../../../store/grid';
-import { useOverlayStore } from '../../../store/overlay';
+import { useFrameEditorStore } from '../../../store/frameEditor';
 import { useKeyboardNavigation } from '../../../hooks/useKeyboardNavigation';
 import { useFrameNavigation } from '../../../hooks/useFrameNavigation';
 import { useBodyOverflow } from '../../../hooks/useBodyOverflow';
 import { CloseButton } from '../../common/CloseButton';
 import { ActionBar } from './ActionBar';
 import { BottomCarousel } from './BottomCarousel';
-import { OverlayBackdrop } from './OverlayBackdrop';
-import { OverlayImage } from './OverlayImage';
+import { FrameEditorBackdrop } from './FrameEditorBackdrop';
+import { FrameEditorImage } from './FrameEditorImage';
 import { FrameNavigationService } from '../../../services/frameNavigation';
 
-export const ImageOverlay: React.FC = () => {
+export const FrameEditor: React.FC = () => {
   
   const frames = useGridStore(state => state.frames);
-  const currentFrameId = useOverlayStore(state => state.currentFrameId);
-  const isVisible = useOverlayStore(state => state.isVisible);
-  const setCurrentFrameId = useOverlayStore(state => state.setCurrentFrameId);
-  const hideOverlay = useOverlayStore(state => state.hideOverlay);
+  const currentFrameId = useFrameEditorStore(state => state.currentFrameId);
+  const isVisible = useFrameEditorStore(state => state.isVisible);
+  const setCurrentFrameId = useFrameEditorStore(state => state.setCurrentFrameId);
+  const hideFrameEditor = useFrameEditorStore(state => state.hideFrameEditor);
   
   // Track if mouse is over interactive elements
   const [isOverInteractive, setIsOverInteractive] = useState(false);
@@ -45,7 +45,7 @@ export const ImageOverlay: React.FC = () => {
   // Use keyboard navigation hook
   useKeyboardNavigation({
     enabled: isVisible && currentFrameId !== null,
-    onEscape: hideOverlay,
+    onEscape: hideFrameEditor,
     onArrowLeft: navigation.goToPrevious,
     onArrowRight: navigation.goToNext
   });
@@ -55,8 +55,8 @@ export const ImageOverlay: React.FC = () => {
   
   // Handle backdrop click
   const handleBackdropClick = useCallback(() => {
-    hideOverlay();
-  }, [hideOverlay]);
+    hideFrameEditor();
+  }, [hideFrameEditor]);
   
   // Interactive state handlers
   const handleInteractiveEnter = useCallback(() => setIsOverInteractive(true), []);
@@ -71,7 +71,7 @@ export const ImageOverlay: React.FC = () => {
       {currentFrameId && currentFrame && (
         <>
           {/* Backdrop */}
-          <OverlayBackdrop 
+          <FrameEditorBackdrop 
             onClick={handleBackdropClick}
             isOverInteractive={isOverInteractive}
           />
@@ -82,12 +82,12 @@ export const ImageOverlay: React.FC = () => {
             onMouseEnter={handleInteractiveEnter}
             onMouseLeave={handleInteractiveLeave}
           >
-            <CloseButton onClick={hideOverlay} />
+            <CloseButton onClick={hideFrameEditor} />
           </div>
           
           {/* Main content area */}
           <div className="flex-1 flex items-center justify-center relative z-10 pointer-events-none">
-            <OverlayImage
+            <FrameEditorImage
               frame={currentFrame}
               onMouseEnter={handleInteractiveEnter}
               onMouseLeave={handleInteractiveLeave}
