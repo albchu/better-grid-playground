@@ -80,7 +80,7 @@ src/
 │   ├── grid/
 │   │   ├── FrameCard.tsx       # Individual frame component
 │   │   ├── ControlPanel.tsx    # Action buttons
-│   │   └── MasonryGrid.tsx     # Grid layout container
+│   │   └── FramesGrid.tsx      # Grid layout container
 │   └── common/
 │       ├── Skeleton.tsx        # Loading placeholder
 │       ├── EditableLabel.tsx   # Inline editable text

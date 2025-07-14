@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { ImageSourceProvider } from './contexts/ImageSourceContext';
-import { MasonryGrid } from './components/grid/MasonryGrid';
+import { FramesGrid } from './components/grid/FramesGrid';
 import { ControlPanel } from './components/grid/ControlPanel';
 import { PerformanceMonitor } from './components/common/PerformanceMonitor';
 import { FrameEditor } from './components/grid/FrameEditor';
@@ -59,12 +59,12 @@ function App() {
         
         {/* Main content area with side-by-side layout */}
         <div ref={containerRef} className="flex flex-1 relative overflow-hidden">
-          {/* Left side: MasonryGrid */}
+          {/* Left side: FramesGrid */}
           <div 
             className="overflow-y-auto"
             style={{ width: `${splitPosition}%` }}
           >
-            <MasonryGrid />
+            <FramesGrid />
           </div>
           
           {/* Resizable divider */}

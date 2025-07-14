@@ -53,13 +53,13 @@ export interface FrameData {
 <App>
  ├─ <ImageSourceProvider>    // Provides abstracted image generation
  │   ├─ <ControlPanel/>      // Tabler icons inside buttons
- │   └─ <MasonryGrid>
+ │   └─ <FramesGrid>
  │       ├─ <FrameCard id=.../>
  │       └─ ...
  └─ </ImageSourceProvider>
 ```
 
-* `<MasonryGrid>` wraps Masonic; `<FrameCard>` root is `motion.div layout`.
+* `<FramesGrid>` wraps Masonic; `<FrameCard>` root is `motion.div layout`.
 * Browser window resize triggers automatic grid reflow for testing.
 
 ---
@@ -322,7 +322,7 @@ src/
     grid/
       FrameCard.tsx
       ControlPanel.tsx
-      MasonryGrid.tsx
+      FramesGrid.tsx
     common/
       Skeleton.tsx
       EditableLabel.tsx

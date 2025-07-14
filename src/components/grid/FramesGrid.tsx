@@ -4,19 +4,19 @@ import { useGridStore } from '../../store/grid';
 import { useFrameEditorStore } from '../../store/frameEditor';
 import { FrameCard } from './FrameCard';
 
-export const MasonryGrid: React.FC = () => {
+export const FramesGrid: React.FC = () => {
   const frames = useGridStore(s => s.frames);
   const gridColumnWidth = useGridStore(s => s.gridColumnWidth);
   const currentFrameId = useFrameEditorStore(s => s.currentFrameId);
 
   // Log frame count changes
   useEffect(() => {
-    console.log('[MasonryGrid] Frame count changed:', frames.length);
+    console.log('[FramesGrid] Frame count changed:', frames.length);
   }, [frames.length]);
 
   // Log grid size changes
   useEffect(() => {
-    console.log('[MasonryGrid] Grid column width changed:', gridColumnWidth);
+    console.log('[FramesGrid] Grid column width changed:', gridColumnWidth);
   }, [gridColumnWidth]);
 
   if (!frames || frames.length === 0) {
