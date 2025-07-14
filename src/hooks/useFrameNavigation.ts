@@ -1,5 +1,4 @@
 import { useMemo, useCallback, useEffect } from 'react';
-import { debounce } from 'lodash';
 import type { FrameData } from '../types';
 
 interface UseFrameNavigationOptions {
@@ -61,14 +60,6 @@ export const useFrameNavigation = ({
   const canGoPrevious = wrapAround ? framesWithImages.length > 1 : currentIndex > 0;
   const canGoNext = wrapAround ? framesWithImages.length > 1 : (currentIndex < framesWithImages.length - 1 && currentIndex !== -1);
 
-  // Create debounced navigation function
-  const debouncedNavigate = useMemo(
-    () => debounce((targetFrameId: string) => {
-      onFrameChange(targetFrameId);
-    }, 150, { leading: true, trailing: false }),
-    [onFrameChange]
-  );
-
   // Navigation callbacks
   const goToPrevious = useCallback(() => {
     if (!framesWithImages.length) return;
@@ -87,8 +78,8 @@ export const useFrameNavigation = ({
       prevIndex = currentIdx - 1;
     }
     
-    debouncedNavigate(framesWithImages[prevIndex].id);
-  }, [currentFrameId, framesWithImages, debouncedNavigate, wrapAround]);
+    onFrameChange(framesWithImages[prevIndex].id);
+  }, [currentFrameId, framesWithImages, onFrameChange, wrapAround]);
 
   const goToNext = useCallback(() => {
     if (!framesWithImages.length) return;
@@ -107,27 +98,27 @@ export const useFrameNavigation = ({
       nextIndex = currentIdx + 1;
     }
     
-    debouncedNavigate(framesWithImages[nextIndex].id);
-  }, [currentFrameId, framesWithImages, debouncedNavigate, wrapAround]);
+    onFrameChange(framesWithImages[nextIndex].id);
+  }, [currentFrameId, framesWithImages, onFrameChange, wrapAround]);
 
   const goToFirst = useCallback(() => {
     if (framesWithImages.length > 0) {
-      debouncedNavigate(framesWithImages[0].id);
+      onFrameChange(framesWithImages[0].id);
     }
-  }, [framesWithImages, debouncedNavigate]);
+  }, [framesWithImages, onFrameChange]);
 
   const goToLast = useCallback(() => {
     if (framesWithImages.length > 0) {
-      debouncedNavigate(framesWithImages[framesWithImages.length - 1].id);
+      onFrameChange(framesWithImages[framesWithImages.length - 1].id);
     }
-  }, [framesWithImages, debouncedNavigate]);
+  }, [framesWithImages, onFrameChange]);
 
   const goToFrame = useCallback((frameId: string) => {
     const frame = framesWithImages.find(f => f.id === frameId);
     if (frame) {
-      debouncedNavigate(frameId);
+      onFrameChange(frameId);
     }
-  }, [framesWithImages, debouncedNavigate]);
+  }, [framesWithImages, onFrameChange]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -162,13 +153,6 @@ export const useFrameNavigation = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [enableKeyboard, goToPrevious, goToNext, goToFirst, goToLast]);
-
-  // Cleanup debounced function on unmount
-  useEffect(() => {
-    return () => {
-      debouncedNavigate.cancel();
-    };
-  }, [debouncedNavigate]);
 
   return {
     // Current state

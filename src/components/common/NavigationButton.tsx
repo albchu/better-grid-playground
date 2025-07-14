@@ -24,7 +24,6 @@ export const NavigationButton: React.FC<NavigationButtonProps> = ({
   className = ''
 }) => {
   const [isPressed, setIsPressed] = useState(false);
-  const [isNavigating, setIsNavigating] = useState(false);
   
   const isPrev = direction === 'prev';
   const Icon = isPressed && !disabled 
@@ -34,49 +33,31 @@ export const NavigationButton: React.FC<NavigationButtonProps> = ({
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!disabled && !isNavigating) {
-      // Set navigating state for visual feedback
-      setIsNavigating(true);
+    if (!disabled) {
       onClick();
-      
-      // Reset after a short delay (matches debounce period)
-      setTimeout(() => {
-        setIsNavigating(false);
-      }, 150);
     }
   };
-  
-  const isDisabled = disabled || isNavigating;
   
   return (
     <motion.button
       type="button"
       onClick={handleClick}
-      onPointerDown={() => !isDisabled && setIsPressed(true)}
+      onPointerDown={() => !disabled && setIsPressed(true)}
       onPointerUp={() => setIsPressed(false)}
       onPointerLeave={() => setIsPressed(false)}
-      disabled={isDisabled}
-      whileHover={isDisabled ? {} : { scale: 1.1 }}
-      whileTap={isDisabled ? {} : { scale: 0.95 }}
+      disabled={disabled}
+      whileHover={disabled ? {} : { scale: 1.1 }}
+      whileTap={disabled ? {} : { scale: 0.95 }}
       className={clsx(
         'p-3 rounded-xl transition-all duration-200',
         'text-gray-300 hover:text-white relative',
-        isDisabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-700/50',
-        isNavigating && 'animate-pulse',
+        disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-700/50',
         className
       )}
       title={isPrev ? "Previous" : "Next"}
       aria-label={isPrev ? "Previous" : "Next"}
     >
       <Icon size={size} />
-      {isNavigating && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          className="absolute inset-0 rounded-xl bg-blue-500/20"
-        />
-      )}
     </motion.button>
   );
 }; 

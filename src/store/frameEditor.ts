@@ -3,24 +3,20 @@ import { useGridStore } from './grid';
 
 interface FrameEditorStore {
   currentFrameId: string | null;
-  isTransitioning: boolean;
   
   // Actions
   setCurrentFrameId: (frameId: string | null) => void;
-  setIsTransitioning: (transitioning: boolean) => void;
 }
 
 export const useFrameEditorStore = create<FrameEditorStore>((set, get) => ({
   currentFrameId: null,
-  isTransitioning: false,
   
   setCurrentFrameId: (frameId) => {
     const currentState = get();
     
-    // Don't update if we're already transitioning or if it's the same frame
-    if (currentState.isTransitioning || currentState.currentFrameId === frameId) {
-      console.log('[FrameEditorStore] Skipping update - transitioning or same frame:', {
-        isTransitioning: currentState.isTransitioning,
+    // Don't update if it's the same frame
+    if (currentState.currentFrameId === frameId) {
+      console.log('[FrameEditorStore] Skipping update - same frame:', {
         currentFrameId: currentState.currentFrameId,
         newFrameId: frameId
       });
@@ -40,17 +36,7 @@ export const useFrameEditorStore = create<FrameEditorStore>((set, get) => ({
     
     console.log('[FrameEditorStore] Setting current frame ID:', frameId);
     set({ 
-      currentFrameId: frameId,
-      isTransitioning: true 
+      currentFrameId: frameId
     });
-    
-    // Reset transitioning flag after a short delay
-    setTimeout(() => {
-      set({ isTransitioning: false });
-    }, 200);
-  },
-  
-  setIsTransitioning: (transitioning) => {
-    set({ isTransitioning: transitioning });
   }
 })); 
