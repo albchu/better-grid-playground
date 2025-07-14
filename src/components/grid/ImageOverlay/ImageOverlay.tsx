@@ -65,6 +65,7 @@ export const ImageOverlay: React.FC<ImageOverlayProps> = ({ initialFrameId, onCl
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
       className="fixed inset-0 z-50 flex flex-col"
+      onClick={handleBackdropClick}
     >
       {/* Dark backdrop */}
       <motion.div 
@@ -73,7 +74,6 @@ export const ImageOverlay: React.FC<ImageOverlayProps> = ({ initialFrameId, onCl
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.4 }}
-        onClick={handleBackdropClick}
       />
 
       {/* Main content area */}
@@ -107,12 +107,17 @@ export const ImageOverlay: React.FC<ImageOverlayProps> = ({ initialFrameId, onCl
               damping: 25,
               stiffness: 300
             }}
-            className="relative z-10 max-w-[85vw] max-h-[75vh] flex items-center"
+            className={`relative z-10 max-w-[85vw] flex items-center ${
+              frames.length > 1 ? 'max-h-[75vh]' : 'max-h-[90vh]'
+            }`}
+            onClick={(e) => e.stopPropagation()}
           >
             <img
               src={currentFrame.imageDataUrl}
               alt={currentFrame.label}
-              className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl"
+              className={`max-w-full object-contain rounded-lg shadow-2xl ${
+                frames.length > 1 ? 'max-h-[75vh]' : 'max-h-[90vh]'
+              }`}
               style={{ 
                 aspectRatio: `${currentFrame.width} / ${currentFrame.height}`,
               }}
@@ -121,21 +126,27 @@ export const ImageOverlay: React.FC<ImageOverlayProps> = ({ initialFrameId, onCl
         </AnimatePresence>
 
         {/* Action bar */}
-        <ActionBar
-          frameData={currentFrame}
-          frames={frames}
-          currentFrameId={currentFrameId}
-          onFrameChange={setCurrentFrameId}
-          onClose={onClose}
-        />
+        <div onClick={(e) => e.stopPropagation()}>
+          <ActionBar
+            frameData={currentFrame}
+            frames={frames}
+            currentFrameId={currentFrameId}
+            onFrameChange={setCurrentFrameId}
+            onClose={onClose}
+          />
+        </div>
       </div>
 
       {/* Bottom carousel */}
-      <BottomCarousel
-        frames={frames}
-        currentFrameId={currentFrameId}
-        onFrameSelect={setCurrentFrameId}
-      />
+      {frames.length > 1 && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <BottomCarousel
+            frames={frames}
+            currentFrameId={currentFrameId}
+            onFrameSelect={setCurrentFrameId}
+          />
+        </div>
+      )}
     </motion.div>
   );
 
