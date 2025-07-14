@@ -18,7 +18,7 @@ export const FrameEditorImage: React.FC<FrameEditorImageProps> = ({
       animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 0.9, opacity: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="relative"
+      className="relative w-full h-full flex items-center justify-center"
       onClick={onClick}
     >
       <img
@@ -26,7 +26,8 @@ export const FrameEditorImage: React.FC<FrameEditorImageProps> = ({
         alt={frame.label}
         className="max-w-full max-h-full w-auto h-auto object-contain rounded-lg shadow-lg"
         style={{ 
-          aspectRatio: `${frame.width} / ${frame.height}`
+          aspectRatio: `${frame.width} / ${frame.height}`,
+          maxHeight: 'calc(100% - 2rem)' // Additional safety margin
         }}
       />
     </motion.div>

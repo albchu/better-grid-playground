@@ -50,8 +50,8 @@ export const NavigationButton: React.FC<NavigationButtonProps> = ({
       whileTap={disabled ? {} : { scale: 0.95 }}
       className={clsx(
         'p-3 rounded-xl transition-all duration-200',
-        'text-white/80 hover:text-white',
-        disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white/20',
+        'text-gray-300 hover:text-white',
+        disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-700/50',
         className
       )}
       title={isPrev ? "Previous" : "Next"}

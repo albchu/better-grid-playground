@@ -4,7 +4,6 @@ import { useFrameEditorStore } from '../../../store/frameEditor';
 import { useKeyboardNavigation } from '../../../hooks/useKeyboardNavigation';
 import { useFrameNavigation } from '../../../hooks/useFrameNavigation';
 import { ActionBar } from './ActionBar';
-import { BottomCarousel } from './BottomCarousel';
 import { FrameEditorImage } from './FrameEditorImage';
 import { FrameNavigationService } from '../../../services/frameNavigation';
 
@@ -60,17 +59,17 @@ export const FrameEditor: React.FC = () => {
   }
   
   return (
-    <div className="h-full flex flex-col bg-gray-800">
-      {/* Main content area */}
-      <div className="flex-1 flex items-center justify-center relative p-8">
+    <div className="h-full bg-gray-800 relative overflow-hidden">
+      {/* Main content area - with calculated height */}
+      <div className="absolute inset-0 pb-24 flex items-center justify-center p-4">
         <FrameEditorImage
           frame={currentFrame}
           onClick={(e) => e.stopPropagation()}
         />
       </div>
       
-      {/* Bottom action bar */}
-      <div className="p-4 bg-gray-900 border-t border-gray-700">
+      {/* Fixed action bar at bottom center */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
         <ActionBar
           frameData={currentFrame}
           frames={framesWithImages}
@@ -78,17 +77,6 @@ export const FrameEditor: React.FC = () => {
           onFrameChange={updateCurrentFrame}
         />
       </div>
-      
-      {/* Bottom carousel */}
-      {framesWithImages.length > 1 && (
-        <div className="p-4 pt-0 bg-gray-900">
-          <BottomCarousel
-            frames={framesWithImages}
-            currentFrameId={currentFrameId}
-            onFrameSelect={updateCurrentFrame}
-          />
-        </div>
-      )}
     </div>
   );
 }; 

@@ -33,7 +33,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   disabled = false
 }) => {
   const variantClasses = {
-    default: 'hover:bg-white/20',
+    default: 'hover:bg-gray-700/50',
     danger: 'hover:bg-red-500/30 hover:text-red-300'
   };
 
@@ -45,7 +45,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
       disabled={disabled}
       className={`
         p-3 rounded-xl transition-all duration-200
-        text-white/80 hover:text-white
+        text-gray-300 hover:text-white
         ${disabled ? 'opacity-40 cursor-not-allowed' : variantClasses[variant]}
       `}
       title={label}
@@ -95,8 +95,8 @@ export const ActionBar: React.FC<ActionBarProps> = ({
         exit: { delay: 0, duration: 0.2 }
       }}
       className="
-        bg-white/10 backdrop-blur-lg rounded-2xl
-        border border-white/20 shadow-2xl
+        bg-gray-900/60 backdrop-blur-md rounded-2xl
+        border border-gray-700/50 shadow-2xl
         p-2 flex flex-row items-center gap-2
         pointer-events-auto
       "
@@ -116,7 +116,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
             disabled={!navigation.hasNext}
           />
           
-          <div className="w-px h-8 bg-white/20 mx-1" />
+          <div className="w-px h-8 bg-gray-600/50 mx-1" />
         </>
       )}
 
@@ -138,7 +138,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
         onClick={handleRename}
       />
       
-      <div className="w-px h-8 bg-white/20 mx-1" />
+      <div className="w-px h-8 bg-gray-600/50 mx-1" />
       
       <ActionButton
         icon={<IconTrash size={20} />}
