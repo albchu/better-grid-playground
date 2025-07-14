@@ -1,97 +1,26 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
+  IconTrash, 
+  IconDeviceFloppy, 
   IconRotateClockwise,
-  IconDeviceFloppy,
-  IconTrash,
   IconEdit
 } from '@tabler/icons-react';
 import type { FrameData } from '../../../types';
+import type { UseFrameNavigationResult } from '../../../hooks/useFrameNavigation';
 import { NavigationButton } from '../../common/NavigationButton';
+import { ActionButton } from './ActionButton';
 
 interface ActionBarProps {
   frameData: FrameData;
-  frames: FrameData[];
-  currentFrameId: string | null;
-  onFrameChange: (frameId: string) => void;
+  navigation: UseFrameNavigationResult;
 }
-
-interface ActionButtonProps {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  variant?: 'default' | 'danger';
-  disabled?: boolean;
-}
-
-const ActionButton: React.FC<ActionButtonProps> = ({ 
-  icon, 
-  label, 
-  onClick, 
-  variant = 'default',
-  disabled = false
-}) => {
-  const variantClasses = {
-    default: 'hover:bg-gray-700/50',
-    danger: 'hover:bg-red-500/30 hover:text-red-300'
-  };
-
-  return (
-    <motion.button
-      whileHover={disabled ? {} : { scale: 1.1 }}
-      whileTap={disabled ? {} : { scale: 0.95 }}
-      onClick={onClick}
-      disabled={disabled}
-      className={`
-        p-3 rounded-xl transition-all duration-200
-        text-gray-300 hover:text-white
-        ${disabled ? 'opacity-40 cursor-not-allowed' : variantClasses[variant]}
-      `}
-      title={label}
-      aria-label={label}
-    >
-      {icon}
-    </motion.button>
-  );
-};
-
-
 
 export const ActionBar: React.FC<ActionBarProps> = ({ 
   frameData, 
-  frames, 
-  currentFrameId, 
-  onFrameChange
+  navigation
 }) => {
-  // Filter frames with images and find current index
-  const framesWithImages = frames.filter(f => f.imageDataUrl);
-  const currentIndex = currentFrameId 
-    ? framesWithImages.findIndex(f => f.id === currentFrameId)
-    : -1;
-  const hasMultipleFrames = framesWithImages.length > 1;
-
-  // Navigation functions with wraparound
-  const goToPrevious = () => {
-    if (!hasMultipleFrames || currentIndex === -1 || !currentFrameId) return;
-    
-    // Wrap around to last frame if at the beginning
-    const prevIndex = currentIndex === 0 
-      ? framesWithImages.length - 1 
-      : currentIndex - 1;
-    
-    onFrameChange(framesWithImages[prevIndex].id);
-  };
-
-  const goToNext = () => {
-    if (!hasMultipleFrames || currentIndex === -1 || !currentFrameId) return;
-    
-    // Wrap around to first frame if at the end
-    const nextIndex = currentIndex === framesWithImages.length - 1 
-      ? 0 
-      : currentIndex + 1;
-    
-    onFrameChange(framesWithImages[nextIndex].id);
-  };
+  const hasMultipleFrames = navigation.totalFrames > 1;
 
   const handleRotate = () => {
     console.log('[ActionBar] Rotate clicked:', { id: frameData.id });
@@ -131,14 +60,14 @@ export const ActionBar: React.FC<ActionBarProps> = ({
         <>
           <NavigationButton
             direction="prev"
-            onClick={goToPrevious}
-            disabled={false}
+            onClick={navigation.goToPrevious}
+            disabled={!navigation.canGoPrevious}
           />
           
           <NavigationButton
             direction="next"
-            onClick={goToNext}
-            disabled={false}
+            onClick={navigation.goToNext}
+            disabled={!navigation.canGoNext}
           />
           
           <div className="w-px h-8 bg-gray-600/50 mx-1" />
