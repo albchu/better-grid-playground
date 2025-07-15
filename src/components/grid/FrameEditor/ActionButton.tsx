@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import clsx from 'clsx';
 
 interface ActionButtonProps {
   icon: React.ReactNode;
@@ -7,6 +7,7 @@ interface ActionButtonProps {
   onClick: () => void;
   variant?: 'default' | 'danger';
   disabled?: boolean;
+  className?: string;
 }
 
 export const ActionButton: React.FC<ActionButtonProps> = ({ 
@@ -14,28 +15,29 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
   label, 
   onClick, 
   variant = 'default',
-  disabled = false
+  disabled = false,
+  className = ''
 }) => {
   const variantClasses = {
-    default: 'hover:bg-gray-700/50',
-    danger: 'hover:bg-red-500/30 hover:text-red-300'
+    default: 'hover:bg-gray-700/50 active:text-indigo-400',
+    danger: 'hover:bg-red-500/30 hover:text-red-300 active:text-red-400'
   };
 
   return (
-    <motion.button
-      whileHover={disabled ? {} : { scale: 1.1 }}
-      whileTap={disabled ? {} : { scale: 0.95 }}
+    <button
+      type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`
-        p-3 rounded-xl transition-all duration-200
-        text-gray-300 hover:text-white
-        ${disabled ? 'opacity-40 cursor-not-allowed' : variantClasses[variant]}
-      `}
+      className={clsx(
+        "action-button p-3 rounded-xl transition-all duration-200",
+        "text-gray-300 hover:text-white relative",
+        disabled ? "opacity-40 cursor-not-allowed" : variantClasses[variant],
+        className
+      )}
       title={label}
       aria-label={label}
     >
       {icon}
-    </motion.button>
+    </button>
   );
 }; 

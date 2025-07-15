@@ -4,11 +4,12 @@ import {
   IconTrash, 
   IconDeviceFloppy, 
   IconRotateClockwise,
-  IconEdit
+  IconEdit,
+  IconPlayerTrackPrev,
+  IconPlayerTrackNext
 } from '@tabler/icons-react';
 import type { FrameData } from '../../../types';
 import type { UseFrameNavigationResult } from '../../../hooks/useFrameNavigation';
-import { NavigationButton } from '../../common/NavigationButton';
 import { ActionButton } from './ActionButton';
 
 interface ActionBarProps {
@@ -58,14 +59,16 @@ export const ActionBar: React.FC<ActionBarProps> = ({
     >
       {hasMultipleFrames && (
         <>
-          <NavigationButton
-            direction="prev"
+          <ActionButton
+            icon={<IconPlayerTrackPrev size={20} />}
+            label="Previous"
             onClick={navigation.goToPrevious}
             disabled={!navigation.canGoPrevious}
           />
           
-          <NavigationButton
-            direction="next"
+          <ActionButton
+            icon={<IconPlayerTrackNext size={20} />}
+            label="Next"
             onClick={navigation.goToNext}
             disabled={!navigation.canGoNext}
           />
