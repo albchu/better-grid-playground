@@ -6,27 +6,27 @@ import { FrameEditorImage } from './FrameEditorImage';
 import { EditableLabel } from '../../common/EditableLabel';
 
 export const FrameEditor = () => {
-  const frames = useFrameEditorStore(state => state.frames);
-  const updateFrame = useFrameEditorStore(state => state.updateFrame);
-  const currentFrameId = useFrameEditorStore(state => state.currentFrameId);
-  const setCurrentFrameId = useFrameEditorStore(state => state.setCurrentFrameId);
-  
+  const frames = useFrameEditorStore((state) => state.frames);
+  const updateFrame = useFrameEditorStore((state) => state.updateFrame);
+  const currentFrameId = useFrameEditorStore((state) => state.currentFrameId);
+  const setCurrentFrameId = useFrameEditorStore((state) => state.setCurrentFrameId);
+
   // Use enhanced frame navigation hook with keyboard support and wraparound
   const navigation = useFrameNavigation({
     frames,
     currentFrameId,
     onFrameChange: setCurrentFrameId,
     wrapAround: true,
-    enableKeyboard: true
+    enableKeyboard: true,
   });
-  
+
   // Auto-select first frame with image if none selected
   React.useEffect(() => {
     if (!currentFrameId && navigation.framesWithImages.length > 0) {
       setCurrentFrameId(navigation.framesWithImages[0].id);
     }
   }, [currentFrameId, navigation.framesWithImages, setCurrentFrameId]);
-  
+
   if (!navigation.currentFrame) {
     return (
       <div className="h-full flex items-center justify-center bg-gray-800 text-gray-400">
@@ -37,7 +37,7 @@ export const FrameEditor = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="h-full bg-gray-800 relative overflow-hidden">
       {/* Frame title at the top */}
@@ -50,21 +50,16 @@ export const FrameEditor = () => {
           />
         </div>
       </div>
-      
+
       {/* Main content area - with calculated height */}
       <div className="absolute inset-0 pt-20 pb-24 flex items-center justify-center p-4">
-        <FrameEditorImage
-          frame={navigation.currentFrame}
-          onClick={(e) => e.stopPropagation()}
-        />
+        <FrameEditorImage frame={navigation.currentFrame} onClick={(e) => e.stopPropagation()} />
       </div>
-      
+
       {/* Fixed action bar at bottom center */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
-        <ActionBar
-          navigation={navigation}
-        />
+        <ActionBar navigation={navigation} />
       </div>
     </div>
   );
-}; 
+};

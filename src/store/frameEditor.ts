@@ -9,29 +9,29 @@ interface FrameEditorStore {
   targetFrameSize: number;
   selectionMode: boolean;
   selectedIds: Set<string>;
-  
+
   // Editor state
   currentFrameId: string | null;
-  
+
   // Frame actions
   addFrame: (imageSource: ImageSource) => Promise<void>;
   refreshFrameImage: (id: string, imageSource: ImageSource) => Promise<void>;
   removeFrame: (id: string) => void;
   updateFrame: (id: string, updates: Partial<FrameData>) => void;
-  
+
   // Grid actions
   setGridColumnWidth: (width: number) => void;
   setTargetFrameSize: (size: number) => void;
   increaseGridSize: () => void;
   decreaseGridSize: () => void;
-  
+
   // Selection actions
   toggleSelectionMode: () => void;
   toggleSelect: (id: string) => void;
   selectAll: () => void;
   clearSelection: () => void;
   deleteSelected: () => void;
-  
+
   // Editor actions
   setCurrentFrameId: (frameId: string | null) => void;
 }
@@ -49,30 +49,33 @@ export const useFrameEditorStore = create<FrameEditorStore>((set, get) => ({
   selectionMode: false,
   selectedIds: new Set<string>(),
   currentFrameId: null,
-  
+
   // Frame actions
   addFrame: async (imageSource: ImageSource) => {
     const id = uuidv4();
-    
-    set(s => ({
-      frames: [...s.frames, {
-        id, 
-        width: 1, 
-        height: 1,
-        label: `Frame ${id.slice(0,4)}`,
-        imageDataUrl: null
-      }]
+
+    set((s) => ({
+      frames: [
+        ...s.frames,
+        {
+          id,
+          width: 1,
+          height: 1,
+          label: `Frame ${id.slice(0, 4)}`,
+          imageDataUrl: null,
+        },
+      ],
     }));
-    
+
     try {
       const { dataUrl, width, height } = await imageSource.generateImage(id);
-      
-      set(s => ({
-        frames: s.frames.map(f => 
+
+      set((s) => ({
+        frames: s.frames.map((f) =>
           f.id === id ? { ...f, imageDataUrl: dataUrl, width, height } : f
-        )
+        ),
       }));
-    } catch (error) {
+    } catch (_error) {
       // Handle error silently
     }
   },
@@ -80,30 +83,28 @@ export const useFrameEditorStore = create<FrameEditorStore>((set, get) => ({
   refreshFrameImage: async (id: string, imageSource: ImageSource) => {
     try {
       const { dataUrl, width, height } = await imageSource.generateImage(id);
-      
-      set(s => ({
-        frames: s.frames.map(f => 
+
+      set((s) => ({
+        frames: s.frames.map((f) =>
           f.id === id ? { ...f, imageDataUrl: dataUrl, width, height } : f
-        )
+        ),
       }));
-    } catch (error) {
+    } catch (_error) {
       // Handle error silently
     }
   },
 
   removeFrame: (id: string) => {
-    set(s => ({
-      frames: s.frames.filter(f => f.id !== id),
-      selectedIds: new Set(Array.from(s.selectedIds).filter(selectedId => selectedId !== id)),
-      currentFrameId: s.currentFrameId === id ? null : s.currentFrameId
+    set((s) => ({
+      frames: s.frames.filter((f) => f.id !== id),
+      selectedIds: new Set(Array.from(s.selectedIds).filter((selectedId) => selectedId !== id)),
+      currentFrameId: s.currentFrameId === id ? null : s.currentFrameId,
     }));
   },
 
   updateFrame: (id: string, updates: Partial<FrameData>) => {
-    set(s => ({
-      frames: s.frames.map(f => 
-        f.id === id ? { ...f, ...updates } : f
-      )
+    set((s) => ({
+      frames: s.frames.map((f) => (f.id === id ? { ...f, ...updates } : f)),
     }));
   },
 
@@ -118,8 +119,8 @@ export const useFrameEditorStore = create<FrameEditorStore>((set, get) => ({
   },
 
   increaseGridSize: () => {
-    set(s => {
-      const currentIndex = GRID_SIZE_PRESETS.findIndex(size => size >= s.gridColumnWidth);
+    set((s) => {
+      const currentIndex = GRID_SIZE_PRESETS.findIndex((size) => size >= s.gridColumnWidth);
       const nextIndex = Math.min(currentIndex + 1, GRID_SIZE_PRESETS.length - 1);
       const newWidth = GRID_SIZE_PRESETS[nextIndex];
       return { gridColumnWidth: newWidth };
@@ -127,8 +128,8 @@ export const useFrameEditorStore = create<FrameEditorStore>((set, get) => ({
   },
 
   decreaseGridSize: () => {
-    set(s => {
-      const currentIndex = GRID_SIZE_PRESETS.findIndex(size => size >= s.gridColumnWidth);
+    set((s) => {
+      const currentIndex = GRID_SIZE_PRESETS.findIndex((size) => size >= s.gridColumnWidth);
       const nextIndex = Math.max(currentIndex - 1, 0);
       const newWidth = GRID_SIZE_PRESETS[nextIndex];
       return { gridColumnWidth: newWidth };
@@ -137,48 +138,48 @@ export const useFrameEditorStore = create<FrameEditorStore>((set, get) => ({
 
   // Selection actions
   toggleSelectionMode: () => {
-    set(s => ({
+    set((s) => ({
       selectionMode: !s.selectionMode,
-      selectedIds: new Set()
+      selectedIds: new Set(),
     }));
   },
 
   toggleSelect: (id: string) => {
-    set(s => {
+    set((s) => {
       const setIds = new Set(s.selectedIds);
       const wasSelected = setIds.has(id);
-      
+
       if (wasSelected) {
         setIds.delete(id);
       } else {
         setIds.add(id);
       }
-      
+
       return { selectedIds: setIds };
     });
   },
 
   selectAll: () => {
-    set(s => ({
-      selectedIds: new Set(s.frames.map(f => f.id)),
-      selectionMode: true
+    set((s) => ({
+      selectedIds: new Set(s.frames.map((f) => f.id)),
+      selectionMode: true,
     }));
   },
 
   clearSelection: () => {
     set({
       selectedIds: new Set(),
-      selectionMode: false
+      selectionMode: false,
     });
   },
 
   deleteSelected: () => {
-    set(s => {
-      return { 
-        frames: s.frames.filter(f => !s.selectedIds.has(f.id)),
+    set((s) => {
+      return {
+        frames: s.frames.filter((f) => !s.selectedIds.has(f.id)),
         selectedIds: new Set(),
         selectionMode: false,
-        currentFrameId: s.selectedIds.has(s.currentFrameId || '') ? null : s.currentFrameId
+        currentFrameId: s.selectedIds.has(s.currentFrameId || '') ? null : s.currentFrameId,
       };
     });
   },
@@ -186,21 +187,23 @@ export const useFrameEditorStore = create<FrameEditorStore>((set, get) => ({
   // Editor actions
   setCurrentFrameId: (frameId) => {
     const currentState = get();
-    
+
     // Don't update if it's the same frame
     if (currentState.currentFrameId === frameId) {
       return;
     }
-    
+
     // Validate that the frame exists
     if (frameId !== null) {
-      const frameExists = currentState.frames.some(f => f.id === frameId && f.imageDataUrl !== null);
-      
+      const frameExists = currentState.frames.some(
+        (f) => f.id === frameId && f.imageDataUrl !== null
+      );
+
       if (!frameExists) {
         return;
       }
     }
-    
+
     set({ currentFrameId: frameId });
-  }
-})); 
+  },
+}));

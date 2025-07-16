@@ -14,18 +14,18 @@ export interface UseFrameNavigationResult {
   currentFrame: FrameData | null;
   currentIndex: number;
   totalFrames: number;
-  
+
   // Navigation state
   canGoPrevious: boolean;
   canGoNext: boolean;
-  
+
   // Navigation actions
   goToPrevious: () => void;
   goToNext: () => void;
   goToFirst: () => void;
   goToLast: () => void;
   goToFrame: (frameId: string) => void;
-  
+
   // Utility
   framesWithImages: FrameData[];
 }
@@ -35,39 +35,39 @@ export const useFrameNavigation = ({
   currentFrameId,
   onFrameChange,
   wrapAround = false,
-  enableKeyboard = false
+  enableKeyboard = false,
 }: UseFrameNavigationOptions): UseFrameNavigationResult => {
-  
   // Filter frames with images
-  const framesWithImages = useMemo(
-    () => frames.filter(f => f.imageDataUrl !== null),
-    [frames]
-  );
+  const framesWithImages = useMemo(() => frames.filter((f) => f.imageDataUrl !== null), [frames]);
 
   // Calculate current index
   const currentIndex = useMemo(
-    () => currentFrameId ? framesWithImages.findIndex(f => f.id === currentFrameId) : -1,
+    () => (currentFrameId ? framesWithImages.findIndex((f) => f.id === currentFrameId) : -1),
     [framesWithImages, currentFrameId]
   );
 
   // Get current frame
   const currentFrame = useMemo(
-    () => currentIndex !== -1 ? framesWithImages[currentIndex] : null,
+    () => (currentIndex !== -1 ? framesWithImages[currentIndex] : null),
     [framesWithImages, currentIndex]
   );
 
   // Calculate navigation availability
   const canGoPrevious = wrapAround ? framesWithImages.length > 1 : currentIndex > 0;
-  const canGoNext = wrapAround ? framesWithImages.length > 1 : (currentIndex < framesWithImages.length - 1 && currentIndex !== -1);
+  const canGoNext = wrapAround
+    ? framesWithImages.length > 1
+    : currentIndex < framesWithImages.length - 1 && currentIndex !== -1;
 
   // Navigation callbacks
   const goToPrevious = useCallback(() => {
     if (!framesWithImages.length) return;
-    
+
     // Use currentFrameId directly to ensure we have the latest state
-    const currentIdx = currentFrameId ? framesWithImages.findIndex(f => f.id === currentFrameId) : -1;
+    const currentIdx = currentFrameId
+      ? framesWithImages.findIndex((f) => f.id === currentFrameId)
+      : -1;
     if (currentIdx === -1) return;
-    
+
     let prevIndex: number;
     if (wrapAround) {
       // Wrap around to last frame if at the beginning
@@ -77,17 +77,19 @@ export const useFrameNavigation = ({
       if (currentIdx <= 0) return;
       prevIndex = currentIdx - 1;
     }
-    
+
     onFrameChange(framesWithImages[prevIndex].id);
   }, [currentFrameId, framesWithImages, onFrameChange, wrapAround]);
 
   const goToNext = useCallback(() => {
     if (!framesWithImages.length) return;
-    
+
     // Use currentFrameId directly to ensure we have the latest state
-    const currentIdx = currentFrameId ? framesWithImages.findIndex(f => f.id === currentFrameId) : -1;
+    const currentIdx = currentFrameId
+      ? framesWithImages.findIndex((f) => f.id === currentFrameId)
+      : -1;
     if (currentIdx === -1) return;
-    
+
     let nextIndex: number;
     if (wrapAround) {
       // Wrap around to first frame if at the end
@@ -97,7 +99,7 @@ export const useFrameNavigation = ({
       if (currentIdx >= framesWithImages.length - 1) return;
       nextIndex = currentIdx + 1;
     }
-    
+
     onFrameChange(framesWithImages[nextIndex].id);
   }, [currentFrameId, framesWithImages, onFrameChange, wrapAround]);
 
@@ -113,12 +115,15 @@ export const useFrameNavigation = ({
     }
   }, [framesWithImages, onFrameChange]);
 
-  const goToFrame = useCallback((frameId: string) => {
-    const frame = framesWithImages.find(f => f.id === frameId);
-    if (frame) {
-      onFrameChange(frameId);
-    }
-  }, [framesWithImages, onFrameChange]);
+  const goToFrame = useCallback(
+    (frameId: string) => {
+      const frame = framesWithImages.find((f) => f.id === frameId);
+      if (frame) {
+        onFrameChange(frameId);
+      }
+    },
+    [framesWithImages, onFrameChange]
+  );
 
   // Keyboard navigation
   useEffect(() => {
@@ -159,19 +164,19 @@ export const useFrameNavigation = ({
     currentFrame,
     currentIndex,
     totalFrames: framesWithImages.length,
-    
+
     // Navigation state
     canGoPrevious,
     canGoNext,
-    
+
     // Navigation actions
     goToPrevious,
     goToNext,
     goToFirst,
     goToLast,
     goToFrame,
-    
+
     // Utility
-    framesWithImages
+    framesWithImages,
   };
-}; 
+};

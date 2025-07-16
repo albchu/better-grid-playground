@@ -22,16 +22,14 @@ export class WorkerImageSource implements ImageSource {
   async generateImage(id: string): Promise<ImageSourceResult> {
     // Wait if queue is full
     while (this.queue.size >= this.MAX_CONCURRENT) {
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
     this.queue.add(id);
-    
+
     try {
       const result = await this.workerApi.generateRandomImage(id);
       return result;
-    } catch (error) {
-      throw error;
     } finally {
       this.queue.delete(id);
     }
@@ -40,4 +38,4 @@ export class WorkerImageSource implements ImageSource {
   dispose() {
     this.worker.terminate();
   }
-} 
+}

@@ -10,17 +10,17 @@ interface ActionButtonProps {
   className?: string;
 }
 
-export const ActionButton = ({ 
-  icon, 
-  label, 
-  onClick, 
+export const ActionButton = ({
+  icon,
+  label,
+  onClick,
   variant = 'default',
   disabled = false,
-  className = ''
+  className = '',
 }: ActionButtonProps) => {
   const variantClasses = {
     default: 'hover:bg-gray-700/50 active:text-indigo-400',
-    danger: 'hover:bg-red-500/30 hover:text-red-300 active:text-red-400'
+    danger: 'hover:bg-red-500/30 hover:text-red-300 active:text-red-400',
   };
 
   return (
@@ -29,9 +29,9 @@ export const ActionButton = ({
       onClick={onClick}
       disabled={disabled}
       className={clsx(
-        "action-button p-3 rounded-xl transition-all duration-200",
-        "text-gray-300 hover:text-white relative",
-        disabled ? "opacity-40 cursor-not-allowed" : variantClasses[variant],
+        'action-button p-3 rounded-xl transition-all duration-200',
+        'text-gray-300 hover:text-white relative',
+        disabled ? 'opacity-40 cursor-not-allowed' : variantClasses[variant],
         className
       )}
       title={label}
@@ -40,4 +40,4 @@ export const ActionButton = ({
       {icon}
     </button>
   );
-}; 
+};

@@ -22,7 +22,7 @@ export const ImageSourceProvider = ({ children }: ImageSourceProviderProps) => {
   useEffect(() => {
     const source = new WorkerImageSource();
     setImageSource(source);
-    
+
     return () => {
       source.dispose();
     };
@@ -32,9 +32,5 @@ export const ImageSourceProvider = ({ children }: ImageSourceProviderProps) => {
     return null;
   }
 
-  return (
-    <ImageSourceContext.Provider value={imageSource}>
-      {children}
-    </ImageSourceContext.Provider>
-  );
-}; 
+  return <ImageSourceContext.Provider value={imageSource}>{children}</ImageSourceContext.Provider>;
+};

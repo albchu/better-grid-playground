@@ -1,7 +1,7 @@
 export interface FrameData {
-  id: string;                  // uuid v4
-  width: number;               // generated image width (px)
-  height: number;              // generated image height (px)
+  id: string; // uuid v4
+  width: number; // generated image width (px)
+  height: number; // generated image height (px)
   label: string;
   imageDataUrl: string | null; // Base-64 PNG returned by worker
 }
@@ -14,4 +14,4 @@ export interface ImageSourceResult {
 
 export interface ImageSource {
   generateImage(id: string): Promise<ImageSourceResult>;
-} 
+}

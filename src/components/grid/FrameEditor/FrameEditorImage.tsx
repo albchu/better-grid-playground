@@ -6,10 +6,7 @@ interface FrameEditorImageProps {
   onClick: (e: React.MouseEvent) => void;
 }
 
-export const FrameEditorImage = ({
-  frame,
-  onClick
-}: FrameEditorImageProps) => {
+export const FrameEditorImage = ({ frame, onClick }: FrameEditorImageProps) => {
   return (
     <div
       key={frame.id}
@@ -20,11 +17,11 @@ export const FrameEditorImage = ({
         src={frame.imageDataUrl!}
         alt={frame.label}
         className="max-w-full max-h-full w-auto h-auto object-contain shadow-lg"
-        style={{ 
+        style={{
           aspectRatio: `${frame.width} / ${frame.height}`,
-          maxHeight: 'calc(100% - 2rem)' // Additional safety margin
+          maxHeight: 'calc(100% - 2rem)', // Additional safety margin
         }}
       />
     </div>
   );
-}; 
+};

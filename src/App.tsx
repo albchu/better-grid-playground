@@ -22,11 +22,11 @@ function App() {
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging.current || !containerRef.current) return;
-    
+
     const container = containerRef.current;
     const containerRect = container.getBoundingClientRect();
     const newPosition = ((e.clientX - containerRect.left) / containerRect.width) * 100;
-    
+
     // Limit between 20% and 80%
     setSplitPosition(Math.min(80, Math.max(20, newPosition)));
   }, []);
@@ -41,7 +41,7 @@ function App() {
   useEffect(() => {
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-    
+
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
@@ -53,20 +53,17 @@ function App() {
       <div className="h-screen bg-gray-900 text-white flex flex-col overflow-hidden">
         <div className="p-4 flex-shrink-0">
           <h1 className="text-2xl font-bold mb-2">Better Grid Playground</h1>
-          
+
           <ControlPanel />
         </div>
-        
+
         {/* Main content area with side-by-side layout */}
         <div ref={containerRef} className="flex flex-1 relative overflow-hidden">
           {/* Left side: FramesGrid */}
-          <div 
-            className="overflow-y-auto"
-            style={{ width: `${splitPosition}%` }}
-          >
+          <div className="overflow-y-auto" style={{ width: `${splitPosition}%` }}>
             <FramesGrid />
           </div>
-          
+
           {/* Resizable divider */}
           <div
             className="w-1 bg-gray-700 hover:bg-gray-600 cursor-col-resize relative group"
@@ -74,20 +71,17 @@ function App() {
           >
             <div className="absolute inset-y-0 -left-1 -right-1 group-hover:bg-blue-500/20" />
           </div>
-          
+
           {/* Right side: FrameEditor */}
-          <div 
-            className="overflow-hidden"
-            style={{ width: `${100 - splitPosition}%` }}
-          >
+          <div className="overflow-hidden" style={{ width: `${100 - splitPosition}%` }}>
             <FrameEditor />
           </div>
         </div>
-        
+
         {debugPanel.isVisible && <PerformanceMonitor />}
       </div>
     </ImageSourceProvider>
   );
 }
 
-export default App; 
+export default App;

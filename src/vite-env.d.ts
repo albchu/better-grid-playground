@@ -5,4 +5,4 @@ declare module '*?worker&inline' {
     new (): Worker;
   };
   export default workerConstructor;
-} 
+}

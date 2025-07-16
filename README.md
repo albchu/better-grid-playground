@@ -30,7 +30,7 @@ A high-performance, responsive masonry grid application built with React 19, Typ
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 
 ### Installation
@@ -63,12 +63,12 @@ The application will be available at `http://localhost:5173`
 Open the browser console and use these commands:
 
 ```javascript
-bgDebug.help()                    // Show all commands
-bgDebug.disable()                 // Disable all logging
-bgDebug.enable()                  // Enable all logging
-bgDebug.disableCategory('grid')   // Disable specific category
-bgDebug.enableCategory('store')   // Enable specific category
-bgDebug.showCategories()          // Show all categories status
+bgDebug.help(); // Show all commands
+bgDebug.disable(); // Disable all logging
+bgDebug.enable(); // Enable all logging
+bgDebug.disableCategory('grid'); // Disable specific category
+bgDebug.enableCategory('store'); // Enable specific category
+bgDebug.showCategories(); // Show all categories status
 ```
 
 ## Project Structure
@@ -133,4 +133,4 @@ This project is open source and available under the [MIT License](LICENSE).
 
 - Built following the comprehensive technical plan in `tech_plan.md`
 - Inspired by modern masonry layout requirements
-- Designed for testing grid performance with large datasets 
+- Designed for testing grid performance with large datasets

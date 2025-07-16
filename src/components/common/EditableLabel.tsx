@@ -6,11 +6,7 @@ interface EditableLabelProps {
   className?: string;
 }
 
-export const EditableLabel = ({ 
-  value, 
-  onChange, 
-  className = '' 
-}: EditableLabelProps) => {
+export const EditableLabel = ({ value, onChange, className = '' }: EditableLabelProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -60,11 +56,11 @@ export const EditableLabel = ({
   }
 
   return (
-    <span 
+    <span
       onClick={() => setIsEditing(true)}
       className={`cursor-pointer hover:bg-gray-700 px-1 rounded ${className}`}
     >
       {value}
     </span>
   );
-}; 
+};

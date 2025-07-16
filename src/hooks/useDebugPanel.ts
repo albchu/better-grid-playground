@@ -4,13 +4,13 @@ export const useDebugPanel = (shortcut = 'ctrl+d') => {
   const [isVisible, setIsVisible] = useState(true);
 
   const toggleVisibility = useCallback(() => {
-    setIsVisible(prev => !prev);
+    setIsVisible((prev) => !prev);
   }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const [modifier, key] = shortcut.split('+');
-      
+
       if (modifier === 'ctrl' && e.ctrlKey && e.key.toLowerCase() === key) {
         e.preventDefault();
         toggleVisibility();
@@ -28,6 +28,6 @@ export const useDebugPanel = (shortcut = 'ctrl+d') => {
     isVisible,
     toggleVisibility,
     show: () => setIsVisible(true),
-    hide: () => setIsVisible(false)
+    hide: () => setIsVisible(false),
   };
-}; 
+};

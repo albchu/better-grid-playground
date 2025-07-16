@@ -1,11 +1,10 @@
-
-import { 
-  IconTrash, 
-  IconDeviceFloppy, 
+import {
+  IconTrash,
+  IconDeviceFloppy,
   IconRotateClockwise,
   IconEdit,
   IconPlayerTrackPrev,
-  IconPlayerTrackNext
+  IconPlayerTrackNext,
 } from '@tabler/icons-react';
 import type { UseFrameNavigationResult } from '../../../hooks/useFrameNavigation';
 import { ActionButton } from './ActionButton';
@@ -14,9 +13,7 @@ interface ActionBarProps {
   navigation: UseFrameNavigationResult;
 }
 
-export const ActionBar = ({ 
-  navigation
-}: ActionBarProps) => {
+export const ActionBar = ({ navigation }: ActionBarProps) => {
   const hasMultipleFrames = navigation.totalFrames > 1;
 
   const handleRotate = () => {
@@ -54,14 +51,14 @@ export const ActionBar = ({
             onClick={navigation.goToPrevious}
             disabled={!navigation.canGoPrevious}
           />
-          
+
           <ActionButton
             icon={<IconPlayerTrackNext size={20} />}
             label="Next"
             onClick={navigation.goToNext}
             disabled={!navigation.canGoNext}
           />
-          
+
           <div className="w-px h-8 bg-gray-600/50 mx-1" />
         </>
       )}
@@ -71,21 +68,13 @@ export const ActionBar = ({
         label="Rotate"
         onClick={handleRotate}
       />
-      
-      <ActionButton
-        icon={<IconDeviceFloppy size={20} />}
-        label="Save"
-        onClick={handleSave}
-      />
-      
-      <ActionButton
-        icon={<IconEdit size={20} />}
-        label="Rename"
-        onClick={handleRename}
-      />
-      
+
+      <ActionButton icon={<IconDeviceFloppy size={20} />} label="Save" onClick={handleSave} />
+
+      <ActionButton icon={<IconEdit size={20} />} label="Rename" onClick={handleRename} />
+
       <div className="w-px h-8 bg-gray-600/50 mx-1" />
-      
+
       <ActionButton
         icon={<IconTrash size={20} />}
         label="Delete"
@@ -94,4 +83,4 @@ export const ActionBar = ({
       />
     </div>
   );
-}; 
+};

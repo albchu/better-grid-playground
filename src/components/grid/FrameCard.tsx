@@ -1,27 +1,21 @@
-
-import { IconRefresh } from "@tabler/icons-react";
-import clsx from "clsx";
-import type { FrameData } from "../../types";
-import { useFrameEditorStore } from "../../store/frameEditor";
-import { useGridActions } from "../../hooks/useGridActions";
-import { Skeleton } from "../common/Skeleton";
-import { EditableLabel } from "../common/EditableLabel";
+import { IconRefresh } from '@tabler/icons-react';
+import clsx from 'clsx';
+import type { FrameData } from '../../types';
+import { useFrameEditorStore } from '../../store/frameEditor';
+import { useGridActions } from '../../hooks/useGridActions';
+import { Skeleton } from '../common/Skeleton';
+import { EditableLabel } from '../common/EditableLabel';
 
 interface FrameCardProps {
   data: FrameData;
   isCurrent?: boolean;
 }
 
-export const FrameCard = ({
-  data,
-  isCurrent = false,
-}: FrameCardProps) => {
+export const FrameCard = ({ data, isCurrent = false }: FrameCardProps) => {
   const selectionMode = useFrameEditorStore((s) => s.selectionMode);
   const isSelected = useFrameEditorStore((s) => s.selectedIds.has(data.id));
   const setCurrentFrameId = useFrameEditorStore((s) => s.setCurrentFrameId);
   const { refreshFrameImage, toggleSelect, updateFrame } = useGridActions();
-
-
 
   const handleClick = (e: React.MouseEvent) => {
     if (selectionMode && !e.defaultPrevented) {
@@ -42,11 +36,11 @@ export const FrameCard = ({
     <div
       onClick={handleClick}
       className={clsx(
-        "frame-card-animated rounded shadow-lg bg-gray-800 overflow-hidden",
-        !isCurrent && "hover:shadow-xl hover:cursor-pointer",
-        selectionMode && "cursor-pointer",
-        isSelected && "ring-4 ring-indigo-500",
-        isCurrent && "ring-4 ring-blue-500 shadow-2xl shadow-blue-500/20 current"
+        'frame-card-animated rounded shadow-lg bg-gray-800 overflow-hidden',
+        !isCurrent && 'hover:shadow-xl hover:cursor-pointer',
+        selectionMode && 'cursor-pointer',
+        isSelected && 'ring-4 ring-indigo-500',
+        isCurrent && 'ring-4 ring-blue-500 shadow-2xl shadow-blue-500/20 current'
       )}
     >
       <div

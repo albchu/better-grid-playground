@@ -10,9 +10,12 @@ export const useGridActions = () => {
     return store.addFrame(imageSource);
   }, [store, imageSource]);
 
-  const refreshFrameImage = useCallback((id: string) => {
-    return store.refreshFrameImage(id, imageSource);
-  }, [store, imageSource]);
+  const refreshFrameImage = useCallback(
+    (id: string) => {
+      return store.refreshFrameImage(id, imageSource);
+    },
+    [store, imageSource]
+  );
 
   return {
     addFrame,
@@ -22,4 +25,4 @@ export const useGridActions = () => {
     toggleSelect: store.toggleSelect,
     deleteSelected: store.deleteSelected,
   };
-}; 
+};

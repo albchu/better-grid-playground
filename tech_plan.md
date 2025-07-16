@@ -1,6 +1,6 @@
 ### **better-grid-playground — complete technical plan (rev 5)**
 
-(*Tailwind + CSS columns masonry, CSS animations, in-browser `image-js` generated images → Base-64 pipeline, and **Tabler Icons** for all glyphs.*)
+(_Tailwind + CSS columns masonry, CSS animations, in-browser `image-js` generated images → Base-64 pipeline, and **Tabler Icons** for all glyphs._)
 
 ---
 
@@ -16,15 +16,15 @@
 
 ## 2 · Core stack & tooling
 
-| Concern               | Library / tech                                              | Reason / notes                                                                              |
-| --------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| Grid layout           | **CSS columns**                                             | Native CSS masonry layout using column-count, column-width, and break-inside-avoid          |
-| Layout animation      | **CSS animations**                                          | Native CSS transitions and keyframes for smooth animations                                  |
-| Global state          | **Zustand**                                                 | Selector-based subscriptions; holds Base-64 strings in memory for snappy re-use             |
-| Styling               | **Tailwind CSS v3**                                         | Utility classes; dynamic aspect ratio via inline style                                      |
-| Icons                 | **Tabler Icons** (`@tabler/icons-react`)                    | Feather-weight, consistent stroke icons                                                     |
-| Image generation      | **`image-js`**                                              | Generates test images with varied aspect ratios; runs in Web Worker                         |
-| Build                 | Vite + TypeScript + ESLint + Prettier + Vitest + Playwright | Worker bundling via `?worker&inline`                                                        |
+| Concern          | Library / tech                                              | Reason / notes                                                                     |
+| ---------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Grid layout      | **CSS columns**                                             | Native CSS masonry layout using column-count, column-width, and break-inside-avoid |
+| Layout animation | **CSS animations**                                          | Native CSS transitions and keyframes for smooth animations                         |
+| Global state     | **Zustand**                                                 | Selector-based subscriptions; holds Base-64 strings in memory for snappy re-use    |
+| Styling          | **Tailwind CSS v3**                                         | Utility classes; dynamic aspect ratio via inline style                             |
+| Icons            | **Tabler Icons** (`@tabler/icons-react`)                    | Feather-weight, consistent stroke icons                                            |
+| Image generation | **`image-js`**                                              | Generates test images with varied aspect ratios; runs in Web Worker                |
+| Build            | Vite + TypeScript + ESLint + Prettier + Vitest + Playwright | Worker bundling via `?worker&inline`                                               |
 
 ```bash
 npm i zustand @tabler/icons-react image-js comlink tailwindcss @types/uuid
@@ -36,11 +36,11 @@ npm i zustand @tabler/icons-react image-js comlink tailwindcss @types/uuid
 
 ```ts
 export interface FrameData {
-  id: string;                  // uuid v4
-  width: number;               // generated image width (px)
-  height: number;              // generated image height (px)
+  id: string; // uuid v4
+  width: number; // generated image width (px)
+  height: number; // generated image height (px)
   label: string;
-  imageSrcUrl: string;         // identifier like "generated:${id}"
+  imageSrcUrl: string; // identifier like "generated:${id}"
   imageDataUrl: string | null; // Base-64 PNG returned by worker
 }
 ```
@@ -59,8 +59,8 @@ export interface FrameData {
  └─ </ImageSourceProvider>
 ```
 
-* `<FramesGrid>` uses CSS columns for masonry layout; `<FrameCard>` uses CSS animations for transitions.
-* Browser window resize triggers automatic grid reflow for testing.
+- `<FramesGrid>` uses CSS columns for masonry layout; `<FrameCard>` uses CSS animations for transitions.
+- Browser window resize triggers automatic grid reflow for testing.
 
 ---
 
@@ -107,33 +107,39 @@ import { expose } from 'comlink';
 async function generateRandomImage(seed: string, maxSize = 1600) {
   // Common aspect ratios for thorough testing
   const aspectRatios = [
-    [1, 1], [4, 3], [16, 9], [9, 16], [2, 1], [1, 2], 
-    [3, 4], [Math.random() * 2 + 0.5, 1]
+    [1, 1],
+    [4, 3],
+    [16, 9],
+    [9, 16],
+    [2, 1],
+    [1, 2],
+    [3, 4],
+    [Math.random() * 2 + 0.5, 1],
   ];
-  
+
   const [w, h] = aspectRatios[Math.floor(Math.random() * aspectRatios.length)];
   const scale = maxSize / Math.max(w, h);
-  
+
   const width = Math.floor(w * scale);
   const height = Math.floor(h * scale);
   const img = new Image(width, height, { kind: 'RGBA' });
-  
+
   // Generate unique pattern based on seed
   const hue = (seed.charCodeAt(0) * 137) % 360;
-  
+
   // Create gradient/pattern for visual distinction
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height; y++) {
-      const intensity = ((x / width) + (y / height)) / 2;
+      const intensity = (x / width + y / height) / 2;
       img.setPixelXY(x, y, [
         Math.floor(intensity * 255),
         Math.floor((1 - intensity) * 255),
         Math.floor(128 + 127 * Math.sin(x / 50)),
-        255
+        255,
       ]);
     }
   }
-  
+
   return {
     dataUrl: img.toDataURL('image/png'),
     w: width,
@@ -144,7 +150,7 @@ async function generateRandomImage(seed: string, maxSize = 1600) {
 expose({ generateRandomImage });
 ```
 
-*Main thread keeps a queue of **max 4** concurrent requests to avoid memory spikes.*
+_Main thread keeps a queue of **max 4** concurrent requests to avoid memory spikes._
 
 ---
 
@@ -158,47 +164,52 @@ const useGridStore = create<GridState>()((set) => ({
 
   addFrame: async (imageSource: ImageSource) => {
     const id = uuidv4();
-    set(s => ({
-      frames: [...s.frames, {
-        id, width: 1, height: 1,
-        label: `Frame ${id.slice(0,4)}`,
-        imageSrcUrl: `generated:${id}`, 
-        imageDataUrl: null
-      }]
+    set((s) => ({
+      frames: [
+        ...s.frames,
+        {
+          id,
+          width: 1,
+          height: 1,
+          label: `Frame ${id.slice(0, 4)}`,
+          imageSrcUrl: `generated:${id}`,
+          imageDataUrl: null,
+        },
+      ],
     }));
-    
+
     const { dataUrl, width, height } = await imageSource.generateImage(id);
-    set(s => ({
-      frames: s.frames.map(f => 
+    set((s) => ({
+      frames: s.frames.map((f) =>
         f.id === id ? { ...f, imageDataUrl: dataUrl, width, height } : f
-      )
+      ),
     }));
   },
 
   refreshFrameImage: async (id: string, imageSource: ImageSource) => {
     const { dataUrl, width, height } = await imageSource.generateImage(id);
-    set(s => ({
-      frames: s.frames.map(f => 
+    set((s) => ({
+      frames: s.frames.map((f) =>
         f.id === id ? { ...f, imageDataUrl: dataUrl, width, height } : f
-      )
+      ),
     }));
   },
 
   toggleSelectionMode: () =>
-    set(s => ({ selectionMode: !s.selectionMode, selectedIds: new Set() })),
+    set((s) => ({ selectionMode: !s.selectionMode, selectedIds: new Set() })),
 
   toggleSelect: (id) =>
-    set(s => {
+    set((s) => {
       const setIds = new Set(s.selectedIds);
       setIds.has(id) ? setIds.delete(id) : setIds.add(id);
       return { selectedIds: setIds };
     }),
 
   deleteSelected: () =>
-    set(s => ({ 
-      frames: s.frames.filter(f => !s.selectedIds.has(f.id)),
+    set((s) => ({
+      frames: s.frames.filter((f) => !s.selectedIds.has(f.id)),
       selectedIds: new Set(),
-      selectionMode: false
+      selectionMode: false,
     })),
 }));
 ```
@@ -210,7 +221,7 @@ const useGridStore = create<GridState>()((set) => ({
 ### `FrameCard.tsx`
 
 ```tsx
-import { IconRefresh } from "@tabler/icons-react";
+import { IconRefresh } from '@tabler/icons-react';
 
 const FrameCard: React.FC<{ data: FrameData }> = ({ data }) => {
   const { selectionMode, toggleSelect } = useGridStore();
@@ -220,29 +231,28 @@ const FrameCard: React.FC<{ data: FrameData }> = ({ data }) => {
     <div
       onClick={() => selectionMode && toggleSelect(data.id)}
       className={clsx(
-        "rounded shadow bg-white",
-        selectionMode && "cursor-pointer ring-2 ring-indigo-500/50"
+        'rounded shadow bg-white',
+        selectionMode && 'cursor-pointer ring-2 ring-indigo-500/50'
       )}
     >
       <div
         style={{ aspectRatio: `${data.width} / ${data.height}` }}
         className="overflow-hidden bg-neutral-200"
       >
-        {data.imageDataUrl
-          ? <img
-              src={data.imageDataUrl}
-              className="w-full h-full object-cover"
-              loading="lazy"
-              decoding="async"
-            />
-          : <Skeleton />}
+        {data.imageDataUrl ? (
+          <img
+            src={data.imageDataUrl}
+            className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <Skeleton />
+        )}
       </div>
 
       <footer className="flex items-center justify-between px-2 py-1 text-sm text-gray-600">
-        <EditableLabel
-          value={data.label}
-          onChange={(label) => updateFrame(data.id, { label })}
-        />
+        <EditableLabel value={data.label} onChange={(label) => updateFrame(data.id, { label })} />
         <button
           onClick={() => refreshFrameImage(data.id)}
           className="p-1 hover:bg-gray-100 rounded"
@@ -259,11 +269,7 @@ const FrameCard: React.FC<{ data: FrameData }> = ({ data }) => {
 ### `ControlPanel.tsx`
 
 ```tsx
-import {
-  IconPlus,
-  IconTrash,
-  IconSelect,
-} from "@tabler/icons-react";
+import { IconPlus, IconTrash, IconSelect } from '@tabler/icons-react';
 
 const ControlPanel = () => {
   const { selectionMode, toggleSelectionMode } = useGridStore();
@@ -272,17 +278,17 @@ const ControlPanel = () => {
   return (
     <div className="flex gap-2 p-3 border-b bg-white">
       <button onClick={addFrame} className="btn-primary">
-        <IconPlus className="mr-1" size={18}/> Add
+        <IconPlus className="mr-1" size={18} /> Add
       </button>
 
       <button onClick={toggleSelectionMode} className="btn-secondary">
-        <IconSelect className="mr-1" size={18}/> 
-        {selectionMode ? "Exit Select" : "Select"}
+        <IconSelect className="mr-1" size={18} />
+        {selectionMode ? 'Exit Select' : 'Select'}
       </button>
 
       {selectionMode && (
         <button onClick={deleteSelected} className="btn-danger">
-          <IconTrash className="mr-1" size={18}/> Delete
+          <IconTrash className="mr-1" size={18} /> Delete
         </button>
       )}
     </div>
@@ -294,11 +300,11 @@ const ControlPanel = () => {
 
 ## 9 · Performance & memory
 
-* **All PNG Base-64 strings persist in Zustand** → instant repaint when items remount.
-* One worker with image-js generates images off main thread; queue length 4 balances speed & RAM.
-* CSS columns provides native browser optimization for masonry layout.
-* Inline `aspect-ratio` eliminates CLS.
-* Generated images allow precise control over dimensions for stress testing.
+- **All PNG Base-64 strings persist in Zustand** → instant repaint when items remount.
+- One worker with image-js generates images off main thread; queue length 4 balances speed & RAM.
+- CSS columns provides native browser optimization for masonry layout.
+- Inline `aspect-ratio` eliminates CLS.
+- Generated images allow precise control over dimensions for stress testing.
 
 ---
 
@@ -309,7 +315,7 @@ const ControlPanel = () => {
 | Unit      | Vitest                | `generateRandomImage` → PNG data URI & dimensions    |
 | Component | React Testing Library | `FrameCard` swaps skeleton → `<img>`                 |
 | E2E       | Playwright            | Add 100 frames, scroll, bulk-delete: verify ≥ 55 fps |
-| Memory    | Chrome DevTools       | Heap ≤ 400 MB after 100 × 1600 px PNGs              |
+| Memory    | Chrome DevTools       | Heap ≤ 400 MB after 100 × 1600 px PNGs               |
 
 ---
 
@@ -350,13 +356,15 @@ The plan now generates test images directly using **image-js** in a worker, remo
 ## 11 · Additional implementation notes
 
 ### Package versions
+
 All packages mentioned are current as of January 2025:
+
 - CSS columns layout - Native browser support
 - ~~`framer-motion@11.15.0`~~ - Removed, using CSS animations instead
 - `react@19.0.0` & `react-dom@19.0.0` - Latest React 19
 - `zustand@5.0.2` - Latest v5
 - `@tabler/icons-react@3.26.0` - Latest version
-- `tailwindcss@4.1.11` - Latest v4 
+- `tailwindcss@4.1.11` - Latest v4
 - `vite@6.0.7` - Latest v6
 - `image-js@0.37.0` - Latest stable
 - `comlink@4.4.2` - Latest version
@@ -367,6 +375,7 @@ All packages mentioned are current as of January 2025:
 1. **Web Worker setup**: The `comlink` package simplifies Web Worker communication. The worker file should be placed in `src/workers/` and imported with the `?worker` suffix in Vite.
 
 2. **Image generation**: Use `image-js` methods like:
+
    ```javascript
    const image = new Image(width, height);
    // Fill with gradient or pattern
@@ -378,8 +387,8 @@ All packages mentioned are current as of January 2025:
    - Setting `column-count: auto` and `column-width` for responsive columns
    - Using `break-inside-avoid` on items to prevent splitting across columns
    - Dynamic `column-gap` for spacing between columns
-   
 4. **Zustand store typing**: Define proper TypeScript interfaces:
+
    ```typescript
    interface Frame {
      id: string;
