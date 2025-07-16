@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+
 import { IconRefresh } from "@tabler/icons-react";
 import clsx from "clsx";
 import type { FrameData } from "../../types";
-import { useGridStore } from "../../store/grid";
 import { useFrameEditorStore } from "../../store/frameEditor";
 import { useGridActions } from "../../hooks/useGridActions";
 import { Skeleton } from "../common/Skeleton";
@@ -13,33 +12,22 @@ interface FrameCardProps {
   isCurrent?: boolean;
 }
 
-export const FrameCard: React.FC<FrameCardProps> = ({
+export const FrameCard = ({
   data,
   isCurrent = false,
-}) => {
-  const selectionMode = useGridStore((s) => s.selectionMode);
-  const isSelected = useGridStore((s) => s.selectedIds.has(data.id));
+}: FrameCardProps) => {
+  const selectionMode = useFrameEditorStore((s) => s.selectionMode);
+  const isSelected = useFrameEditorStore((s) => s.selectedIds.has(data.id));
   const setCurrentFrameId = useFrameEditorStore((s) => s.setCurrentFrameId);
   const { refreshFrameImage, toggleSelect, updateFrame } = useGridActions();
 
-  useEffect(() => {
-    console.log("[FrameCard] Mounted:", {
-      id: data.id,
-      hasImage: !!data.imageDataUrl,
-    });
 
-    return () => {
-      console.log("[FrameCard] Unmounted:", { id: data.id });
-    };
-  }, [data.id]);
 
   const handleClick = (e: React.MouseEvent) => {
     if (selectionMode && !e.defaultPrevented) {
-      console.log("[FrameCard] Clicked in selection mode:", { id: data.id });
       toggleSelect(data.id);
     } else if (!selectionMode && data.imageDataUrl) {
       // Select frame in editor
-      console.log("[FrameCard] Selecting frame in editor:", { id: data.id });
       setCurrentFrameId(data.id);
     }
   };
@@ -47,7 +35,6 @@ export const FrameCard: React.FC<FrameCardProps> = ({
   const handleRefresh = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("[FrameCard] Refresh requested:", { id: data.id });
     refreshFrameImage(data.id);
   };
 
@@ -73,14 +60,6 @@ export const FrameCard: React.FC<FrameCardProps> = ({
             className="w-full h-full object-cover"
             loading="lazy"
             decoding="async"
-            onLoad={() =>
-              console.log("[FrameCard] Image loaded:", { id: data.id })
-            }
-            onError={() =>
-              console.error("[FrameCard] Image failed to load:", {
-                id: data.id,
-              })
-            }
           />
         ) : (
           <Skeleton />
@@ -91,10 +70,6 @@ export const FrameCard: React.FC<FrameCardProps> = ({
         <EditableLabel
           value={data.label}
           onChange={(label) => {
-            console.log("[FrameCard] Label changed:", {
-              id: data.id,
-              newLabel: label,
-            });
             updateFrame(data.id, { label });
           }}
         />

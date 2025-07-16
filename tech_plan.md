@@ -7,7 +7,7 @@
 ## 1 · Project goals
 
 1. Display a responsive masonry grid of **`FrameCard`** items that always respect each card's true aspect ratio.
-2. Let users **add**, **delete**, **select** and **refresh (new image)** cards; every layout change animates smoothly via Framer Motion.
+2. Let users **add**, **delete**, **select** and **refresh (new image)** cards; every layout change animates smoothly via CSS animations.
 3. Every card image is generated using **image-js in a Web Worker**, encoded to a PNG **Base-64 data URI**, stored in Zustand, and rendered from memory for instant redraws.
 4. Grid automatically reflows when browser window is resized to test layout responsiveness.
 5. All UI icons (add, delete, select, refresh, etc.) come from **Tabler Icons** (`@tabler/icons-react`).
@@ -19,7 +19,7 @@
 | Concern               | Library / tech                                              | Reason / notes                                                                              |
 | --------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | Grid layout           | **CSS columns**                                             | Native CSS masonry layout using column-count, column-width, and break-inside-avoid          |
-| Layout animation      | **Framer Motion v8**                                        | `layout` prop gives automatic FLIP animations                                               |
+| Layout animation      | **CSS animations**                                          | Native CSS transitions and keyframes for smooth animations                                  |
 | Global state          | **Zustand**                                                 | Selector-based subscriptions; holds Base-64 strings in memory for snappy re-use             |
 | Styling               | **Tailwind CSS v3**                                         | Utility classes; dynamic aspect ratio via inline style                                      |
 | Icons                 | **Tabler Icons** (`@tabler/icons-react`)                    | Feather-weight, consistent stroke icons                                                     |
@@ -217,8 +217,7 @@ const FrameCard: React.FC<{ data: FrameData }> = ({ data }) => {
   const { refreshFrameImage } = useGridActions();
 
   return (
-    <motion.div
-      layout
+    <div
       onClick={() => selectionMode && toggleSelect(data.id)}
       className={clsx(
         "rounded shadow bg-white",
@@ -252,7 +251,7 @@ const FrameCard: React.FC<{ data: FrameData }> = ({ data }) => {
           <IconRefresh size={16} />
         </button>
       </footer>
-    </motion.div>
+    </div>
   );
 };
 ```
@@ -391,12 +390,7 @@ All packages mentioned are current as of January 2025:
    }
    ```
 
-5. **Framer Motion layout animations**: Use `layout` prop on components that should animate position/size changes:
-   ```jsx
-   <motion.div layout layoutId={frame.id}>
-     {/* FrameCard content */}
-   </motion.div>
-   ```
+5. **CSS animations**: Use CSS transitions and keyframes for smooth animations. The animations are defined in `tailwind.css` with custom keyframes for fadeIn, springIn, slideUp, etc.
 
 ### Performance considerations
 

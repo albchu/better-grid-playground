@@ -1,22 +1,13 @@
-import React, { useEffect } from 'react';
-import { useGridStore } from '../../store/grid';
+
 import { useFrameEditorStore } from '../../store/frameEditor';
 import { FrameCard } from './FrameCard';
 
-export const FramesGrid: React.FC = () => {
-  const frames = useGridStore(s => s.frames);
-  const gridColumnWidth = useGridStore(s => s.gridColumnWidth);
+export const FramesGrid = () => {
+  const frames = useFrameEditorStore(s => s.frames);
+  const gridColumnWidth = useFrameEditorStore(s => s.gridColumnWidth);
   const currentFrameId = useFrameEditorStore(s => s.currentFrameId);
 
-  // Log frame count changes
-  useEffect(() => {
-    console.log('[FramesGrid] Frame count changed:', frames.length);
-  }, [frames.length]);
 
-  // Log grid size changes
-  useEffect(() => {
-    console.log('[FramesGrid] Grid column width changed:', gridColumnWidth);
-  }, [gridColumnWidth]);
 
   if (!frames || frames.length === 0) {
     return (
@@ -39,20 +30,18 @@ export const FramesGrid: React.FC = () => {
           gap: '16px'
         }}
       >
-        {/* <AnimatePresence> */}
-          {frames.map((frame) => (
-            <div 
-              key={frame.id} 
-              className="break-inside-avoid mb-4"
-              style={{ display: 'inline-block', width: '100%' }}
-            >
-              <FrameCard 
-                data={frame} 
-                isCurrent={frame.id === currentFrameId}
-              />
-            </div>
-          ))}
-        {/* </AnimatePresence> */}
+        {frames.map((frame) => (
+          <div 
+            key={frame.id} 
+            className="break-inside-avoid mb-4"
+            style={{ display: 'inline-block', width: '100%' }}
+          >
+            <FrameCard 
+              data={frame} 
+              isCurrent={frame.id === currentFrameId}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );

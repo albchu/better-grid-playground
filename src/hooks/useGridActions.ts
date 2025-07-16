@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
-import { useGridStore } from '../store/grid';
+import { useFrameEditorStore } from '../store/frameEditor';
 import { useImageSource } from '../contexts/ImageSourceContext';
 
 export const useGridActions = () => {
   const imageSource = useImageSource();
-  const store = useGridStore();
+  const store = useFrameEditorStore();
 
   const addFrame = useCallback(() => {
     return store.addFrame(imageSource);

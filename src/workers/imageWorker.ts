@@ -29,8 +29,6 @@ function hashCode(str: string): number {
 }
 
 async function generateRandomImage(seed: string, maxSize = 1600): Promise<ImageSourceResult> {
-  console.log('[ImageWorker] Starting image generation:', { seed, maxSize });
-  
   // Common aspect ratios for thorough testing
   const aspectRatios = [
     [1, 1], [4, 3], [16, 9], [9, 16], [2, 1], [1, 2], 
@@ -43,12 +41,6 @@ async function generateRandomImage(seed: string, maxSize = 1600): Promise<ImageS
   
   const width = Math.floor(w * scale);
   const height = Math.floor(h * scale);
-  
-  console.log('[ImageWorker] Creating image:', {
-    seed,
-    selectedRatio,
-    dimensions: `${width}x${height}`
-  });
   
   const img = new Image(width, height);
   
@@ -197,14 +189,6 @@ async function generateRandomImage(seed: string, maxSize = 1600): Promise<ImageS
   }
   
   const dataUrl = img.toDataURL('image/png');
-  console.log('[ImageWorker] Image generated:', {
-    seed,
-    patternType,
-    hue1,
-    hue2,
-    dataUrlLength: dataUrl.length,
-    dimensions: `${width}x${height}`
-  });
   
   return {
     dataUrl,

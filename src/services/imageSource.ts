@@ -15,55 +15,29 @@ export class WorkerImageSource implements ImageSource {
   private readonly MAX_CONCURRENT = 4;
 
   constructor() {
-    console.log('[ImageSource] Creating worker instance');
     this.worker = new ImageWorker();
     this.workerApi = wrap<WorkerApi>(this.worker);
   }
 
   async generateImage(id: string): Promise<ImageSourceResult> {
-    console.log('[ImageSource] Generate image requested:', { 
-      id, 
-      queueSize: this.queue.size 
-    });
-    
     // Wait if queue is full
     while (this.queue.size >= this.MAX_CONCURRENT) {
-      console.log('[ImageSource] Queue full, waiting...', { 
-        queueSize: this.queue.size,
-        maxConcurrent: this.MAX_CONCURRENT 
-      });
       await new Promise(resolve => setTimeout(resolve, 100));
     }
 
     this.queue.add(id);
-    console.log('[ImageSource] Added to queue:', { 
-      id, 
-      queueSize: this.queue.size 
-    });
     
     try {
       const result = await this.workerApi.generateRandomImage(id);
-      console.log('[ImageSource] Image generated successfully:', {
-        id,
-        dimensions: `${result.width}x${result.height}`,
-        dataUrlLength: result.dataUrl.length
-      });
-      
       return result;
     } catch (error) {
-      console.error('[ImageSource] Error generating image:', { id, error });
       throw error;
     } finally {
       this.queue.delete(id);
-      console.log('[ImageSource] Removed from queue:', { 
-        id, 
-        queueSize: this.queue.size 
-      });
     }
   }
 
   dispose() {
-    console.log('[ImageSource] Disposing worker');
     this.worker.terminate();
   }
 } 

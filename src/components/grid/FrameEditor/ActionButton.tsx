@@ -10,14 +10,14 @@ interface ActionButtonProps {
   className?: string;
 }
 
-export const ActionButton: React.FC<ActionButtonProps> = ({ 
+export const ActionButton = ({ 
   icon, 
   label, 
   onClick, 
   variant = 'default',
   disabled = false,
   className = ''
-}) => {
+}: ActionButtonProps) => {
   const variantClasses = {
     default: 'hover:bg-gray-700/50 active:text-indigo-400',
     danger: 'hover:bg-red-500/30 hover:text-red-300 active:text-red-400'

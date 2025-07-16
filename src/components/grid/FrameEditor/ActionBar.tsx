@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { 
   IconTrash, 
   IconDeviceFloppy, 
@@ -7,35 +7,32 @@ import {
   IconPlayerTrackPrev,
   IconPlayerTrackNext
 } from '@tabler/icons-react';
-import type { FrameData } from '../../../types';
 import type { UseFrameNavigationResult } from '../../../hooks/useFrameNavigation';
 import { ActionButton } from './ActionButton';
 
 interface ActionBarProps {
-  frameData: FrameData;
   navigation: UseFrameNavigationResult;
 }
 
-export const ActionBar: React.FC<ActionBarProps> = ({ 
-  frameData, 
+export const ActionBar = ({ 
   navigation
-}) => {
+}: ActionBarProps) => {
   const hasMultipleFrames = navigation.totalFrames > 1;
 
   const handleRotate = () => {
-    console.log('[ActionBar] Rotate clicked:', { id: frameData.id });
+    // TODO: Implement rotate functionality
   };
 
   const handleSave = () => {
-    console.log('[ActionBar] Save clicked:', { id: frameData.id });
+    // TODO: Implement save functionality
   };
 
   const handleDelete = () => {
-    console.log('[ActionBar] Delete clicked:', { id: frameData.id });
+    // TODO: Implement delete functionality
   };
 
   const handleRename = () => {
-    console.log('[ActionBar] Rename clicked:', { id: frameData.id });
+    // TODO: Implement rename functionality
   };
 
   return (

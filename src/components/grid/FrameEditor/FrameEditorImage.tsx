@@ -6,10 +6,10 @@ interface FrameEditorImageProps {
   onClick: (e: React.MouseEvent) => void;
 }
 
-export const FrameEditorImage: React.FC<FrameEditorImageProps> = ({
+export const FrameEditorImage = ({
   frame,
   onClick
-}) => {
+}: FrameEditorImageProps) => {
   return (
     <div
       key={frame.id}

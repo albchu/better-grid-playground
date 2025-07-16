@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useGridStore } from '../../store/grid';
+import { useState, useEffect } from 'react';
+import { useFrameEditorStore } from '../../store/frameEditor';
 
-export const PerformanceMonitor: React.FC = () => {
+export const PerformanceMonitor = () => {
   const [fps, setFps] = useState(0);
   const [renderTime, setRenderTime] = useState(0);
-  const frames = useGridStore(s => s.frames);
-  const gridColumnWidth = useGridStore(s => s.gridColumnWidth);
+  const frames = useFrameEditorStore(s => s.frames);
+  const gridColumnWidth = useFrameEditorStore(s => s.gridColumnWidth);
   
   useEffect(() => {
     let frameCount = 0;

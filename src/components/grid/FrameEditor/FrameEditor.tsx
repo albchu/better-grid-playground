@@ -1,14 +1,13 @@
 import React from 'react';
-import { useGridStore } from '../../../store/grid';
 import { useFrameEditorStore } from '../../../store/frameEditor';
 import { useFrameNavigation } from '../../../hooks/useFrameNavigation';
 import { ActionBar } from './ActionBar';
 import { FrameEditorImage } from './FrameEditorImage';
 import { EditableLabel } from '../../common/EditableLabel';
 
-export const FrameEditor: React.FC = () => {
-  const frames = useGridStore(state => state.frames);
-  const updateFrame = useGridStore(state => state.updateFrame);
+export const FrameEditor = () => {
+  const frames = useFrameEditorStore(state => state.frames);
+  const updateFrame = useFrameEditorStore(state => state.updateFrame);
   const currentFrameId = useFrameEditorStore(state => state.currentFrameId);
   const setCurrentFrameId = useFrameEditorStore(state => state.setCurrentFrameId);
   
@@ -63,7 +62,6 @@ export const FrameEditor: React.FC = () => {
       {/* Fixed action bar at bottom center */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
         <ActionBar
-          frameData={navigation.currentFrame}
           navigation={navigation}
         />
       </div>

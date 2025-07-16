@@ -6,11 +6,11 @@ interface EditableLabelProps {
   className?: string;
 }
 
-export const EditableLabel: React.FC<EditableLabelProps> = ({ 
+export const EditableLabel = ({ 
   value, 
   onChange, 
   className = '' 
-}) => {
+}: EditableLabelProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);

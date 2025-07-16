@@ -16,7 +16,7 @@ interface ImageSourceProviderProps {
   children: React.ReactNode;
 }
 
-export const ImageSourceProvider: React.FC<ImageSourceProviderProps> = ({ children }) => {
+export const ImageSourceProvider = ({ children }: ImageSourceProviderProps) => {
   const [imageSource, setImageSource] = useState<WorkerImageSource | null>(null);
 
   useEffect(() => {

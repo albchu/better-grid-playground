@@ -11,7 +11,7 @@ A high-performance, responsive masonry grid application built with React 19, Typ
 
 - 🎨 **Dynamic Image Generation** - In-browser image generation using `image-js` in Web Workers
 - 🧱 **Responsive Masonry Layout** - CSS columns-based layout that adapts to any screen size
-- ✨ **Smooth Animations** - Framer Motion powered transitions for all interactions
+- ✨ **Smooth Animations** - CSS transitions for all interactions
 - 💾 **Efficient State Management** - Zustand store with Base64 image caching
 - 🎯 **CRUD Operations** - Add, select, delete, and refresh frames
 - 📊 **Performance Monitoring** - Real-time FPS and memory usage tracking
@@ -22,7 +22,6 @@ A high-performance, responsive masonry grid application built with React 19, Typ
 - **React 19** with TypeScript
 - **Vite** for lightning-fast builds
 - **Tailwind CSS v3** for styling
-- **Framer Motion** for animations
 - **Zustand** for state management
 - **image-js** for image generation
 - **Comlink** for Web Worker communication

@@ -1,14 +1,14 @@
-import React from 'react';
+
 import { IconPlus, IconTrash, IconSelect } from '@tabler/icons-react';
-import { useGridStore, GRID_SIZE_PRESETS } from '../../store/grid';
+import { useFrameEditorStore, GRID_SIZE_PRESETS } from '../../store/frameEditor';
 import { useGridActions } from '../../hooks/useGridActions';
 import clsx from 'clsx';
 
-export const ControlPanel: React.FC = () => {
-  const selectionMode = useGridStore(s => s.selectionMode);
-  const selectedCount = useGridStore(s => s.selectedIds.size);
-  const gridColumnWidth = useGridStore(s => s.gridColumnWidth);
-  const setGridColumnWidth = useGridStore(s => s.setGridColumnWidth);
+export const ControlPanel = () => {
+  const selectionMode = useFrameEditorStore(s => s.selectionMode);
+  const selectedCount = useFrameEditorStore(s => s.selectedIds.size);
+  const gridColumnWidth = useFrameEditorStore(s => s.gridColumnWidth);
+  const setGridColumnWidth = useFrameEditorStore(s => s.setGridColumnWidth);
   const { addFrame, toggleSelectionMode, deleteSelected } = useGridActions();
 
   return (
