@@ -1,6 +1,6 @@
 ### **better-grid-playground — complete technical plan (rev 5)**
 
-(*Tailwind + CSS columns masonry, Framer-Motion animation, in-browser `image-js` generated images → Base-64 pipeline, and **Tabler Icons** for all glyphs.*)
+(*Tailwind + CSS columns masonry, CSS animations, in-browser `image-js` generated images → Base-64 pipeline, and **Tabler Icons** for all glyphs.*)
 
 ---
 
@@ -27,7 +27,7 @@
 | Build                 | Vite + TypeScript + ESLint + Prettier + Vitest + Playwright | Worker bundling via `?worker&inline`                                                        |
 
 ```bash
-npm i framer-motion zustand @tabler/icons-react image-js comlink tailwindcss @types/uuid
+npm i zustand @tabler/icons-react image-js comlink tailwindcss @types/uuid
 ```
 
 ---
@@ -59,7 +59,7 @@ export interface FrameData {
  └─ </ImageSourceProvider>
 ```
 
-* `<FramesGrid>` uses CSS columns for masonry layout; `<FrameCard>` root is `motion.div layout`.
+* `<FramesGrid>` uses CSS columns for masonry layout; `<FrameCard>` uses CSS animations for transitions.
 * Browser window resize triggers automatic grid reflow for testing.
 
 ---
@@ -353,7 +353,7 @@ The plan now generates test images directly using **image-js** in a worker, remo
 ### Package versions
 All packages mentioned are current as of January 2025:
 - CSS columns layout - Native browser support
-- `framer-motion@11.15.0` - Latest v11
+- ~~`framer-motion@11.15.0`~~ - Removed, using CSS animations instead
 - `react@19.0.0` & `react-dom@19.0.0` - Latest React 19
 - `zustand@5.0.2` - Latest v5
 - `@tabler/icons-react@3.26.0` - Latest version

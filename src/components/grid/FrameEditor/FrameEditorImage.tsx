@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import type { FrameData } from '../../../types';
 
 interface FrameEditorImageProps {
@@ -12,13 +11,9 @@ export const FrameEditorImage: React.FC<FrameEditorImageProps> = ({
   onClick
 }) => {
   return (
-    <motion.div
+    <div
       key={frame.id}
-      initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0.9, opacity: 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="relative w-full h-full flex items-center justify-center"
+      className="frame-editor-image-animated relative w-full h-full flex items-center justify-center"
       onClick={onClick}
     >
       <img
@@ -30,6 +25,6 @@ export const FrameEditorImage: React.FC<FrameEditorImageProps> = ({
           maxHeight: 'calc(100% - 2rem)' // Additional safety margin
         }}
       />
-    </motion.div>
+    </div>
   );
 }; 

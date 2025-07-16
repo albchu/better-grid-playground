@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { 
   IconTrash, 
   IconDeviceFloppy, 
@@ -40,16 +39,9 @@ export const ActionBar: React.FC<ActionBarProps> = ({
   };
 
   return (
-    <motion.div
-      initial={{ y: 100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      exit={{ y: 50, opacity: 0 }}
-      transition={{ 
-        duration: 0.3, 
-        delay: 0.1,
-        exit: { delay: 0, duration: 0.2 }
-      }}
+    <div
       className="
+        action-bar-animated
         bg-gray-900/60 backdrop-blur-md rounded-2xl
         border border-gray-700/50 shadow-2xl
         p-2 flex flex-row items-center gap-2
@@ -103,6 +95,6 @@ export const ActionBar: React.FC<ActionBarProps> = ({
         onClick={handleDelete}
         variant="danger"
       />
-    </motion.div>
+    </div>
   );
 }; 

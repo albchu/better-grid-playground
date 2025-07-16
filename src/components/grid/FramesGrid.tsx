@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
 import { useGridStore } from '../../store/grid';
 import { useFrameEditorStore } from '../../store/frameEditor';
 import { FrameCard } from './FrameCard';
@@ -33,18 +32,18 @@ export const FramesGrid: React.FC = () => {
   return (
     <div className="p-4">
       <div 
-        className="masonry-columns transition-all duration-300 ease-in-out"
+        className="masonry-columns"
         style={{
           columnCount: 'auto',
           columnWidth: `${gridColumnWidth}px`,
-          columnGap: '16px'
+          gap: '16px'
         }}
       >
-        <AnimatePresence>
+        {/* <AnimatePresence> */}
           {frames.map((frame) => (
             <div 
               key={frame.id} 
-              className="break-inside-avoid mb-4 transition-all duration-300"
+              className="break-inside-avoid mb-4"
               style={{ display: 'inline-block', width: '100%' }}
             >
               <FrameCard 
@@ -53,7 +52,7 @@ export const FramesGrid: React.FC = () => {
               />
             </div>
           ))}
-        </AnimatePresence>
+        {/* </AnimatePresence> */}
       </div>
     </div>
   );
